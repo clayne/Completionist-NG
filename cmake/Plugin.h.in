@@ -18,10 +18,11 @@ DLLEXPORT constinit auto SKSEPlugin_Version = []() noexcept
 {
 	SKSE::PluginVersionData data{};
 
-	data.PluginVersion(Plugin::Version);
-	data.PluginName(Plugin::NAME);
-	data.AuthorName(Plugin::AUTHOR);
-	data.UsesAddressLibrary(true);
+    data.PluginVersion(Plugin::Version);
+    data.PluginName(Plugin::NAME);
+    data.AuthorName(Plugin::AUTHOR);
+    data.UsesAddressLibrary(true);
+    data.HasNoStructUse(true);
 
 	return data;
 }();

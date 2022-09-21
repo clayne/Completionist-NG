@@ -104,11 +104,14 @@
 
 // winnt
 #include <ShlObj_core.h>
-#include <Windows.h>
 #include <Psapi.h>
 
 using namespace std::literals;
 using namespace REL::literals;
+
+using ScriptObjectPtr = RE::BSTSmartPointer<RE::BSScript::Object>;
+using ScriptArrayPtr = RE::BSTSmartPointer<RE::BSScript::Array>;
+using ScriptCallbackPtr = RE::BSTSmartPointer<RE::BSScript::IStackCallbackFunctor>;
 
 #define DLLEXPORT extern "C" [[maybe_unused]] __declspec(dllexport)
 
