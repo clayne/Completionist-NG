@@ -95,11 +95,11 @@ namespace InventoryEvents {
 		if (!a_event || !a_event->opening || !Completionist_Inventory::FunctionHolder::IsReady()) {
 			return EventResult::kContinue;
 		}
-
+		
 		auto* const ui = RE::UI::GetSingleton();
 		auto* const intfcStr = RE::InterfaceStrings::GetSingleton();
-		RE::GFxValue nullIconSetter{};
 		RE::ItemList* itemList{ nullptr };
+		RE::GFxValue nullIconSetter{};
 
 		if (a_event->menuName == intfcStr->barterMenu) {
 			if (const auto* menu = static_cast<RE::BarterMenu*>(ui->GetMenu(a_event->menuName).get())) {
@@ -130,7 +130,6 @@ namespace InventoryEvents {
 			}
 		}
 		if (itemList) {
-			//DEBUG("Opening {}", a_event->menuName.c_str());
 			for (auto* item : itemList->items) {
 				Completionist_IconSetter::ProcessEntry(item);
 			}
@@ -220,7 +219,7 @@ namespace Completionist_Inventory {
 
 	void FunctionHolder::Register() {
 
-		InventoryEvents::InventoryMenuHandler::Sink();
+		//InventoryEvents::InventoryMenuHandler::Sink();
 		INFO("Completionist: Successfully Registered Inventory Functions");
 	}
 }
@@ -1010,6 +1009,7 @@ namespace Completionist_IconSetter {
 		case RE::FormType::Armor:
 		{
 			ICON_EXTEND(Armor, a_item);
+			//RE::DebugMessageBox("Processing Armor");
 			break;
 		}
 		case RE::FormType::Book:

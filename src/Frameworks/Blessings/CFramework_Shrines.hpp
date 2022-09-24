@@ -3,13 +3,7 @@
 #include <SKSE\API.h>
 #include "Serialization.hpp"
 
-//------------------------------------------------------------------------------------------------------------------------------
-//------------------------------------------------------------------------------------------------------------------------------
-//------------------------------------------------------------------------------------------------------------------------------ Dragon Priest Masks (Vanilla)
-//------------------------------------------------------------------------------------------------------------------------------
-//------------------------------------------------------------------------------------------------------------------------------
-
-namespace CFramework_DragonMasks_V
+namespace CFramework_Shrines_V
 {
 	extern Serialization::CompletionistData Data;
 
@@ -25,20 +19,19 @@ namespace CFramework_DragonMasks_V
 
 	class CHandler final :
 
-		public RE::BSTEventSink<RE::TESContainerChangedEvent> {
+		public RE::BSTEventSink<RE::TESActivateEvent> {
 
-	public: [[nodiscard]] static CHandler* GetSingleton() {
-		static CHandler singleton;
-		return &singleton;
-	}
+		public: [[nodiscard]] static CHandler* GetSingleton() {
+			static CHandler singleton;
+			return &singleton;
+		}
 
-		  static void RegisterEvents() { register_event<RE::TESContainerChangedEvent>(); }
+		  static void RegisterEvents() { register_event<RE::TESActivateEvent>(); }
 
-		  EventResult			ProcessEvent(const RE::TESContainerChangedEvent* a_event, RE::BSTEventSource<RE::TESContainerChangedEvent>*) override;
+		  EventResult			ProcessEvent(const RE::TESActivateEvent* a_event, RE::BSTEventSource<RE::TESActivateEvent>*) override;
 
 		  static void			InstallFramework();
 		  static void			ProcessFoundForm(RE::FormID a_baseID, RE::FormID a_curID);
-		  static void			SendNotification(std::string a_msg);
 		  static void			InjectAndCompileData();
 		  static void			UpdateFoundForms();
 
@@ -66,13 +59,7 @@ namespace CFramework_DragonMasks_V
 	};
 }
 
-//------------------------------------------------------------------------------------------------------------------------------
-//------------------------------------------------------------------------------------------------------------------------------
-//------------------------------------------------------------------------------------------------------------------------------ Dragon Priest Masks (Patches)
-//------------------------------------------------------------------------------------------------------------------------------
-//------------------------------------------------------------------------------------------------------------------------------
-
-namespace CFramework_DragonMasks_P
+namespace CFramework_Shrines_P
 {
 	extern Serialization::CompletionistData Data;
 
@@ -88,20 +75,19 @@ namespace CFramework_DragonMasks_P
 
 	class CHandler final :
 
-		public RE::BSTEventSink<RE::TESContainerChangedEvent> {
+		public RE::BSTEventSink<RE::TESActivateEvent> {
 
 	public: [[nodiscard]] static CHandler* GetSingleton() {
 		static CHandler singleton;
 		return &singleton;
 	}
 
-		  static void RegisterEvents() { register_event<RE::TESContainerChangedEvent>(); }
+		  static void RegisterEvents() { register_event<RE::TESActivateEvent>(); }
 
-		  EventResult			ProcessEvent(const RE::TESContainerChangedEvent* a_event, RE::BSTEventSource<RE::TESContainerChangedEvent>*) override;
+		  EventResult			ProcessEvent(const RE::TESActivateEvent* a_event, RE::BSTEventSource<RE::TESActivateEvent>*) override;
 
 		  static void			InstallFramework();
 		  static void			ProcessFoundForm(RE::FormID a_baseID, RE::FormID a_curID);
-		  static void			SendNotification(std::string a_msg);
 		  static void			InjectAndCompileData();
 		  static void			UpdateFoundForms();
 

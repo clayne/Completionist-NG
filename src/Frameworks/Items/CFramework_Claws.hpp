@@ -42,9 +42,9 @@ namespace CFramework_DragonClaws_V
 		static void			InjectAndCompileData();
 		static void			UpdateFoundForms();
 
+		static uint32_t		IsOptionCompleted(std::string a_name);
 		static void			SetOptionCompleted(std::string a_name);
-		static bool			IsOptionCompleted(std::string a_name);
-
+		
 	private:
 
 		CHandler() = default;
@@ -105,8 +105,8 @@ namespace CFramework_DragonClaws_P
 		  static void			InjectAndCompileData();
 		  static void			UpdateFoundForms();
 
+		  static uint32_t		IsOptionCompleted(std::string a_name);
 		  static void			SetOptionCompleted(std::string a_name);
-		  static bool			IsOptionCompleted(std::string a_name);
 
 	private:
 

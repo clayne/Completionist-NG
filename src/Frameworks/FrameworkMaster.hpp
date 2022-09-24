@@ -6,6 +6,7 @@
 namespace CFramework_Master
 {
 	extern Serialization::CompletionistData FoundItemData;
+	extern Serialization::CompletionistData FoundItemData_NoShow;
 
 	class FrameworkAPI {
 
@@ -29,11 +30,7 @@ namespace CFramework_Master
 		static uint32_t Framework_GetEntries_TotalByID(RE::StaticFunctionTag*, uint32_t a_ID);
 		static uint32_t Framework_GetEntries_FoundByID(RE::StaticFunctionTag*, uint32_t a_ID);
 
-		static void ShowMessageMainMCM(RE::BSFixedString a_msg);
-		static void ShowMessageMiscMCM(RE::BSFixedString a_msg);
-		static bool GetQuestHandle(RE::BSScript::IVirtualMachine* a_vm, std::string ScriptName, RE::VMHandle& handleOut);
-
-		static bool Framework_IsOptionCompleted(RE::StaticFunctionTag*, uint32_t a_ID, std::string a_name);
+		static uint32_t Framework_IsOptionCompleted(RE::StaticFunctionTag*, uint32_t a_ID, std::string a_name);
 		static void Framework_SetOptionCompleted(RE::StaticFunctionTag*, uint32_t a_ID, std::string a_name);
 
 		static std::string GetBookSkill(RE::ActorValue a_val);
@@ -41,5 +38,6 @@ namespace CFramework_Master
 		static bool Framework_CCItemsInstalled(RE::StaticFunctionTag*);
 		static bool Framework_CCBooksInstalled(RE::StaticFunctionTag*);
 		static bool Framework_CCLocationsInstalled(RE::StaticFunctionTag*);
+		static void SendNotification(std::string a_msg, std::string a_setting);
 	};
 }

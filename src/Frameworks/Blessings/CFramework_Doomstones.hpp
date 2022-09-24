@@ -3,10 +3,10 @@
 #include <SKSE\API.h>
 #include "Serialization.hpp"
 
-namespace CFramework_Weapons
+namespace CFramework_Doomstones
 {
 	extern Serialization::CompletionistData Data;
-	
+
 	extern std::vector<std::string> NameArray;
 	extern std::vector<std::string> TextArray;
 	extern std::vector<RE::TESForm*> FormArray;
@@ -19,25 +19,24 @@ namespace CFramework_Weapons
 
 	class CHandler final :
 
-	public RE::BSTEventSink<RE::TESContainerChangedEvent> {
+		public RE::BSTEventSink<RE::TESActivateEvent> {
 
-	public: [[nodiscard]] static CHandler* GetSingleton() {
-		static CHandler singleton;
-		return &singleton;
-	}
+		public: [[nodiscard]] static CHandler* GetSingleton() {
+			static CHandler singleton;
+			return &singleton;
+		}
 
-		static void RegisterEvents() { register_event<RE::TESContainerChangedEvent>(); }
+		  static void RegisterEvents() { register_event<RE::TESActivateEvent>(); }
 
-		EventResult			ProcessEvent(const RE::TESContainerChangedEvent* a_event, RE::BSTEventSource<RE::TESContainerChangedEvent>*) override;
+		  EventResult			ProcessEvent(const RE::TESActivateEvent* a_event, RE::BSTEventSource<RE::TESActivateEvent>*) override;
 
-		static void			InstallFramework();
-		static void			ProcessFoundForm(RE::FormID a_baseID, RE::FormID a_curID);
-		static void			SendNotification(std::string a_msg);
-		static void			InjectAndCompileData();
-		static void			UpdateFoundForms();
+		  static void			InstallFramework();
+		  static void			ProcessFoundForm(RE::FormID a_baseID, RE::FormID a_curID);
+		  static void			InjectAndCompileData();
+		  static void			UpdateFoundForms();
 
-		static uint32_t		IsOptionCompleted(std::string a_name);
-		static void			SetOptionCompleted(std::string a_name);
+		  static uint32_t		IsOptionCompleted(std::string a_name);
+		  static void			SetOptionCompleted(std::string a_name);
 
 	private:
 

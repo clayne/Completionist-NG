@@ -1,37 +1,40 @@
 #include "Serialization.hpp"
-#include "CFramework_Masks.hpp"
+#include "CFramework_Shrines.hpp"
 #include "Frameworks/FrameworkMaster.hpp"
 #include "Internal Utility/ScriptObject.hpp"
 
 #undef AddForm
 
-//------------------------------------------------------------------------------------------------------------------------------
-//------------------------------------------------------------------------------------------------------------------------------
-//------------------------------------------------------------------------------------------------------------------------------ Dragon Priest Masks (Vanilla)
-//------------------------------------------------------------------------------------------------------------------------------
-//------------------------------------------------------------------------------------------------------------------------------
-
-namespace CFramework_DragonMasks_V {
+namespace CFramework_Shrines_V {
 
 	using namespace CFramework_Master;
 
 	// clang-format off
-	constexpr Serialization::FormArray SkyrimForms = {
-		0x0061CC1,0x0061CD6,0x0061CB9,0x0061C8B,0x0061CA5,0x0061CC2,0x0061CC0,
-		0x0061CC9,0x0061CAB,0x0061CCA,
+	constexpr Serialization::FormArray Shrines_SK = {
+	0x0D9883 /*Akatosh*/,
+	0x071854 /*Arkay*/,
+	0x0D9881 /*Dibella*/,
+	0x0D9885 /*Julianos*/,
+	0x0D987F /*Kynareth*/,
+	0x0D9887 /*Mara*/,
+	0x10E8B0 /*Nocturnal*/,
+	0x0D987D /*Stendarr*/,
+	0x100780 /*Talos*/,
+	0x0D987B /*Zenithar*/,
+	0x04E4D5 /*Meridia*/,
 	};
 
-	constexpr Serialization::FormArray DragonbornForms = {
-		0x0240FE,0x0240FF,0x024037,
+	constexpr Serialization::FormArray Shrines_DG = {
+	0x00C86B /*Auriel*/,
 	};
 
-	constexpr Serialization::Variation DragonbornVariation[] = {
-	{ 0x039FA1, { 0x039FA2, 0x039FA3, 0x039D2B, 0x039D2E, 0x039D2F } },
+	constexpr Serialization::FormArray Shrines_DB = {
+	0x03A484 /*Azura*/,
+	0x039E34 /*Boethiah*/,
+	0x03A481 /*Mephala*/,
 	};
 
 	// clang-format on
-
-	inline ScriptObjectPtr  MCMScript;
 
 	Serialization::CompletionistData Data;
 
@@ -57,12 +60,13 @@ namespace CFramework_DragonMasks_V {
 	//-- Framework Events ( On Item Added ) -------------
 	//---------------------------------------------------
 
-	EventResult CHandler::ProcessEvent(const RE::TESContainerChangedEvent* a_event, RE::BSTEventSource<RE::TESContainerChangedEvent>*) {
+	EventResult CHandler::ProcessEvent(const RE::TESActivateEvent* a_event, RE::BSTEventSource<RE::TESActivateEvent>*) {
 
-		if (!a_event || a_event->newContainer != 0x00014 || !Data.HasForm(a_event->baseObj)) { return EventResult::kContinue; }
+		if (!a_event || !a_event->objectActivated || !Data.HasForm(a_event->objectActivated->GetBaseObject()->GetFormID())) { return EventResult::kContinue; }
 
-		auto base = Data.GetBase(a_event->baseObj) ? Data.GetBase(a_event->baseObj) : a_event->baseObj;
-		CHandler::ProcessFoundForm(base, a_event->baseObj);
+		auto formID = a_event->objectActivated->GetBaseObject()->GetFormID();
+		auto base = Data.GetBase(formID) ? Data.GetBase(formID) : formID;
+		CHandler::ProcessFoundForm(base, formID);
 		return EventResult::kContinue;
 	}
 
@@ -72,15 +76,15 @@ namespace CFramework_DragonMasks_V {
 
 	void CHandler::ProcessFoundForm(RE::FormID a_baseID, RE::FormID a_eventID) {
 
-		if (!FoundItemData.HasForm(a_eventID)) {
-			auto msg = fmt::format("Completionist: {:s} Acquired!"sv, Data.GetForm(a_eventID)->GetName());
-			CHandler::SendNotification(msg);
+		if (!FoundItemData_NoShow.HasForm(a_eventID)) {
+			auto msg = fmt::format("Completionist: Entry Complete - {:s}!"sv, Data.GetForm(a_eventID)->GetName());
+			FrameworkAPI::SendNotification(msg, "NotifySpecial");
 		}
 
-		FoundItemData.AddForm(a_baseID);
+		FoundItemData_NoShow.AddForm(a_baseID);
 		for (auto var : Data.GetAllVariations()) {
 			if (Data.GetBase(var) == a_baseID) {
-				FoundItemData.AddForm(var);
+				FoundItemData_NoShow.AddForm(var);
 			}
 		}
 
@@ -89,20 +93,7 @@ namespace CFramework_DragonMasks_V {
 		BoolArray[b_pos] = true;
 
 		EntriesFound = std::ranges::count(BoolArray, true);
-		INFO("FOUND ITEMS LIST = {}", FoundItemData.data.size());
-	}
-
-	//---------------------------------------------------
-	//-- Framework Functions ( Send Notification ) ------
-	//---------------------------------------------------
-
-	void CHandler::SendNotification(std::string a_msg) {
-
-		if (!MCMScript->GetProperty("NotifyItems")->GetBool()) { return; }
-
-		auto message = fmt::format("<font color='{:s}'>{:s}</font>"sv, MCMScript->GetProperty("ColourString")->GetString(), a_msg);
-		if (!MCMScript->GetProperty("NotificationColourEnabled")->GetBool()) { RE::DebugNotification(a_msg.c_str()); return; }
-		RE::DebugNotification(message.c_str());
+		INFO("Found Items List Size - (No Show) = {}", FoundItemData_NoShow.data.size());
 	}
 
 	//---------------------------------------------------
@@ -111,15 +102,18 @@ namespace CFramework_DragonMasks_V {
 
 	void CHandler::InjectAndCompileData() {
 
-		auto handler = RE::TESDataHandler::GetSingleton();
-		MCMScript = ScriptObject::FromForm(static_cast<RE::TESForm*>(handler->LookupForm(0x00800, "Completionist.esp")), "Completionist_MCMScript");
+		auto pname = "Wintersun - Faiths of Skyrim.esp";
+		if (const auto* Mod = RE::TESDataHandler::GetSingleton()->LookupLoadedModByName(pname); Mod) {
+			Data.AddForm(0x03A484, "Dragonborn.esm", 0x07F163, pname); // Azura
+			Data.AddForm(0x03A484, "Dragonborn.esm", 0x2D00B0, pname); // Azura
+			Data.AddForm(0x039E34, "Dragonborn.esm", 0x09D7ED, pname); // Boethiah
+		}
 
-		Data.CompileFormArray(CFramework_DragonMasks_V::SkyrimForms, "Skyrim.esm");
-		Data.CompileFormArray(CFramework_DragonMasks_V::DragonbornForms, "Dragonborn.esm");
-		Data.CompileVariation(CFramework_DragonMasks_V::DragonbornVariation, "Dragonborn.esm");
-		Data.MergeAsCollectable();
+		Data.CompileFormArray(CFramework_Shrines_V::Shrines_SK, "Skyrim.esm");
+		Data.CompileFormArray(CFramework_Shrines_V::Shrines_DG, "Dawnguard.esm");
+		Data.CompileFormArray(CFramework_Shrines_V::Shrines_DB, "Dragonborn.esm");
+		CFramework_Shrines_V::Data.Populate(NameArray, FormArray, BoolArray, TextArray);
 
-		CFramework_DragonMasks_V::Data.Populate(NameArray, FormArray, BoolArray, TextArray);
 		EntriesTotal = FormArray.size();
 		EntriesFound = std::ranges::count(BoolArray, true);
 	}
@@ -131,11 +125,10 @@ namespace CFramework_DragonMasks_V {
 	void CHandler::UpdateFoundForms() {
 
 		for (auto i = 0; i < FormArray.size(); i++) {
-			if (FoundItemData.HasForm(FormArray[i]->GetFormID())) {
+			if (FoundItemData_NoShow.HasForm(FormArray[i]->GetFormID())) {
 				BoolArray[i] = true;
 			}
 		}
-
 		EntriesTotal = FormArray.size();
 		EntriesFound = std::ranges::count(BoolArray, true);
 	}
@@ -164,19 +157,19 @@ namespace CFramework_DragonMasks_V {
 			if (BoolArray.at(b_pos)) {
 				BoolArray.at(b_pos) = false;
 
-				FoundItemData.RemoveForm(FormArray.at(b_pos)->GetFormID());
+				FoundItemData_NoShow.RemoveForm(FormArray.at(b_pos)->GetFormID());
 				for (auto var : Data.GetAllVariations()) {
 					if (Data.GetBase(var) == FormArray.at(b_pos)->GetFormID()) {
-						FoundItemData.RemoveForm(var);
+						FoundItemData_NoShow.RemoveForm(var);
 					}
 				}
 			}
 			else {
 				BoolArray.at(b_pos) = true;
-				FoundItemData.AddForm(FormArray.at(b_pos)->GetFormID());
+				FoundItemData_NoShow.AddForm(FormArray.at(b_pos)->GetFormID());
 				for (auto var : Data.GetAllVariations()) {
 					if (Data.GetBase(var) == FormArray.at(b_pos)->GetFormID()) {
-						FoundItemData.AddForm(var);
+						FoundItemData_NoShow.AddForm(var);
 					}
 				}
 			}
@@ -189,22 +182,34 @@ namespace CFramework_DragonMasks_V {
 
 //------------------------------------------------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------------------------------------------------
-//------------------------------------------------------------------------------------------------------------------------------ Dragon Priest Masks (Patches)
+//------------------------------------------------------------------------------------------------------------------------------ Wintersun
 //------------------------------------------------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------------------------------------------------
 
-namespace CFramework_DragonMasks_P {
+namespace CFramework_Shrines_P {
 
 	using namespace CFramework_Master;
 
 	// clang-format off
-	constexpr Serialization::FormArray PatchForms = {
-		0x000000,
+	constexpr Serialization::FormArray Shrines_WI = {
+	0x0E476B,0x107FC5,0x107FC6,0x0C60C4,0x0C6099,0x107FC7,0x0FDD3E,
+	0x107FC8,0x09D7FA,0x107FCB,0x1B9652,0x1B9653,0x1B9650,0x1B9651,
+	0x3D283F,0x1B964F,0x107FCC,0x2EE923,0x3F5FA1,0x107FC4,0x1B964E,
+	0x1B964B,0x107FCE,0x1B964D,0x26FD37,0x1C89C7,0x1B964C,
+	};
+
+	constexpr Serialization::Variation Shrines_WIV[] = {
+	{ 0x0986CA, { 0x2B6B9A, } }, //Mehrunes Dagon
+	{ 0x0C60C5, { 0x3D283B, } }, //Sanguine
+	{ 0x2D0116, { 0x2E4677, } }, //Jephre
+	{ 0x2E464B, { 0x065C05, } }, //Magnus
+	{ 0x107FCD, { 0x2E464E, } }, //Trinimac
+	{ 0x0F8C25, { 0x2E464F, } }, //Xarxes	
+	{ 0x2E464C, { 0x0935B3, } }, //Phynaster
+	{ 0x2E46A7, { 0x019B85, 0x2E464D } }, //Syrabane
 	};
 
 	// clang-format on
-
-	inline ScriptObjectPtr  MCMScript;
 
 	Serialization::CompletionistData Data;
 
@@ -212,6 +217,8 @@ namespace CFramework_DragonMasks_P {
 	std::vector<std::string> TextArray{};
 	std::vector<RE::TESForm*> FormArray{};
 	std::vector<bool> BoolArray{};
+
+	inline ScriptObjectPtr  MCMScript;
 
 	inline uint32_t EntriesTotal;
 	inline uint32_t EntriesFound;
@@ -224,19 +231,19 @@ namespace CFramework_DragonMasks_P {
 
 		CHandler::RegisterEvents();
 		CHandler::InjectAndCompileData();
-		CHandler::UpdateFoundForms();
 	}
 
 	//---------------------------------------------------
 	//-- Framework Events ( On Item Added ) -------------
 	//---------------------------------------------------
 
-	EventResult CHandler::ProcessEvent(const RE::TESContainerChangedEvent* a_event, RE::BSTEventSource<RE::TESContainerChangedEvent>*) {
+	EventResult CHandler::ProcessEvent(const RE::TESActivateEvent* a_event, RE::BSTEventSource<RE::TESActivateEvent>*) {
 
-		if (!a_event || a_event->newContainer != 0x00014 || !Data.HasForm(a_event->baseObj)) { return EventResult::kContinue; }
+		if (!a_event || !a_event->objectActivated || !Data.HasForm(a_event->objectActivated->GetBaseObject()->GetFormID())) { return EventResult::kContinue; }
 
-		auto base = Data.GetBase(a_event->baseObj) ? Data.GetBase(a_event->baseObj) : a_event->baseObj;
-		CHandler::ProcessFoundForm(base, a_event->baseObj);
+		auto formID = a_event->objectActivated->GetBaseObject()->GetFormID();
+		auto base = Data.GetBase(formID) ? Data.GetBase(formID) : formID;
+		CHandler::ProcessFoundForm(base, formID);
 		return EventResult::kContinue;
 	}
 
@@ -246,15 +253,15 @@ namespace CFramework_DragonMasks_P {
 
 	void CHandler::ProcessFoundForm(RE::FormID a_baseID, RE::FormID a_eventID) {
 
-		if (!FoundItemData.HasForm(a_eventID)) {
-			auto msg = fmt::format("Completionist: {:s} Acquired!"sv, Data.GetForm(a_eventID)->GetName());
-			CHandler::SendNotification(msg);
+		if (!FoundItemData_NoShow.HasForm(a_eventID)) {
+			auto msg = fmt::format("Completionist: Entry Complete - {:s}!"sv, Data.GetForm(a_eventID)->GetName());
+			FrameworkAPI::SendNotification(msg, "NotifySpecial");
 		}
 
-		FoundItemData.AddForm(a_baseID);
+		FoundItemData_NoShow.AddForm(a_baseID);
 		for (auto var : Data.GetAllVariations()) {
 			if (Data.GetBase(var) == a_baseID) {
-				FoundItemData.AddForm(var);
+				FoundItemData_NoShow.AddForm(var);
 			}
 		}
 
@@ -263,20 +270,7 @@ namespace CFramework_DragonMasks_P {
 		BoolArray[b_pos] = true;
 
 		EntriesFound = std::ranges::count(BoolArray, true);
-		INFO("FOUND ITEMS LIST = {}", FoundItemData.data.size());
-	}
-
-	//---------------------------------------------------
-	//-- Framework Functions ( Send Notification ) ------
-	//---------------------------------------------------
-
-	void CHandler::SendNotification(std::string a_msg) {
-
-		if (!MCMScript->GetProperty("NotifyItems")->GetBool()) { return; }
-
-		auto message = fmt::format("<font color='{:s}'>{:s}</font>"sv, MCMScript->GetProperty("ColourString")->GetString(), a_msg);
-		if (!MCMScript->GetProperty("NotificationColourEnabled")->GetBool()) { RE::DebugNotification(a_msg.c_str()); return; }
-		RE::DebugNotification(message.c_str());
+		INFO("Found Items List Size - (No Show) = {}", FoundItemData_NoShow.data.size());
 	}
 
 	//---------------------------------------------------
@@ -288,14 +282,10 @@ namespace CFramework_DragonMasks_P {
 		auto handler = RE::TESDataHandler::GetSingleton();
 		MCMScript = ScriptObject::FromForm(static_cast<RE::TESForm*>(handler->LookupForm(0x00800, "Completionist.esp")), "Completionist_MCMScript");
 
-		if (const auto* installed = RE::TESDataHandler::GetSingleton()->LookupModByName("Wyrmstooth.esp"); installed) {
-			Data.AddForm(0x4F2E1F, "Wyrmstooth.esp");
-		}
+		Data.CompileFormArray(CFramework_Shrines_P::Shrines_WI, "Wintersun - Faiths of Skyrim.esp");
+		Data.CompileVariation(CFramework_Shrines_P::Shrines_WIV, "Wintersun - Faiths of Skyrim.esp");
+		CFramework_Shrines_P::Data.Populate(NameArray, FormArray, BoolArray, TextArray);
 
-		Data.CompileFormArray(CFramework_DragonMasks_P::PatchForms, "Skyrim.esm");
-		Data.MergeAsCollectable();
-
-		CFramework_DragonMasks_P::Data.Populate(NameArray, FormArray, BoolArray, TextArray);
 		EntriesTotal = FormArray.size();
 		EntriesFound = std::ranges::count(BoolArray, true);
 	}
@@ -307,11 +297,10 @@ namespace CFramework_DragonMasks_P {
 	void CHandler::UpdateFoundForms() {
 
 		for (auto i = 0; i < FormArray.size(); i++) {
-			if (FoundItemData.HasForm(FormArray[i]->GetFormID())) {
+			if (FoundItemData_NoShow.HasForm(FormArray[i]->GetFormID())) {
 				BoolArray[i] = true;
 			}
 		}
-
 		EntriesTotal = FormArray.size();
 		EntriesFound = std::ranges::count(BoolArray, true);
 	}
@@ -340,19 +329,19 @@ namespace CFramework_DragonMasks_P {
 			if (BoolArray.at(b_pos)) {
 				BoolArray.at(b_pos) = false;
 
-				FoundItemData.RemoveForm(FormArray.at(b_pos)->GetFormID());
+				FoundItemData_NoShow.RemoveForm(FormArray.at(b_pos)->GetFormID());
 				for (auto var : Data.GetAllVariations()) {
 					if (Data.GetBase(var) == FormArray.at(b_pos)->GetFormID()) {
-						FoundItemData.RemoveForm(var);
+						FoundItemData_NoShow.RemoveForm(var);
 					}
 				}
 			}
 			else {
 				BoolArray.at(b_pos) = true;
-				FoundItemData.AddForm(FormArray.at(b_pos)->GetFormID());
+				FoundItemData_NoShow.AddForm(FormArray.at(b_pos)->GetFormID());
 				for (auto var : Data.GetAllVariations()) {
 					if (Data.GetBase(var) == FormArray.at(b_pos)->GetFormID()) {
-						FoundItemData.AddForm(var);
+						FoundItemData_NoShow.AddForm(var);
 					}
 				}
 			}

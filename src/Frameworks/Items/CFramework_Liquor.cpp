@@ -121,12 +121,7 @@ namespace CFramework_Liquor {
 		Data.CompileFormArray(CFramework_Liquor::DragonbornForms, "Dragonborn.esm");
 		Data.MergeAsCollectable();
 
-		CFramework_Liquor::Data.Populate(NameArray, FormArray, BoolArray);
-
-		for (auto& name : NameArray) {
-			TextArray.push_back("NO_HIGHLIGHT");
-		}
-
+		CFramework_Liquor::Data.Populate(NameArray, FormArray, BoolArray, TextArray);
 		EntriesTotal = FormArray.size();
 		EntriesFound = std::ranges::count(BoolArray, true);
 	}
@@ -151,12 +146,12 @@ namespace CFramework_Liquor {
 	//-- Framework Functions ( MCM is Entry Complete ) --
 	//---------------------------------------------------
 
-	bool CHandler::IsOptionCompleted(std::string a_name) {
+	uint32_t CHandler::IsOptionCompleted(std::string a_name) {
 
 		if (auto t_pos = std::find(NameArray.begin(), NameArray.end(), a_name); t_pos != NameArray.end()) {
-			return BoolArray[std::distance(NameArray.begin(), t_pos)];
+			return uint32_t(BoolArray[std::distance(NameArray.begin(), t_pos)]);
 		}
-		return false;
+		return -1;
 	}
 
 	//---------------------------------------------------

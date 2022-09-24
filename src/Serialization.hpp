@@ -1,4 +1,3 @@
-
 #pragma once
 
 #undef GetForm
@@ -11,7 +10,6 @@ namespace Serialization
 		kHeader = 'COMP',
 		kVersion = 1000,
 	};
-
 
 #define DEFAULT_VARIATION_MAX 12
 	using FormArray = RE::FormID[];
@@ -56,6 +54,24 @@ namespace Serialization
 
 			auto base = handler->LookupFormID(a_base, a_filename);
 			auto variation = handler->LookupFormID(a_variation, a_filename);
+
+			if (!base || !variation || (HasForm(base) && HasForm(variation))) {
+				return;
+			}
+			else {
+				data.try_emplace(base);
+				data.try_emplace(variation, base);
+			}
+		}
+		[[nodiscard]] void AddForm(RE::FormID a_base, std::string_view a_basefilename, RE::FormID a_variation, std::string a_modfilename) noexcept
+		{
+			auto* handler = RE::TESDataHandler::GetSingleton();
+			if (!handler) {
+				return;
+			}
+
+			auto base = handler->LookupFormID(a_base, a_basefilename);
+			auto variation = handler->LookupFormID(a_variation, a_modfilename);
 
 			if (!base || !variation || (HasForm(base) && HasForm(variation))) {
 				return;
@@ -260,12 +276,13 @@ namespace Serialization
 			return false;
 		}
 
-		void Populate(std::vector<std::string>& a_names, std::vector<RE::TESForm*>& a_forms, std::vector<bool>& a_bools, bool a_isMarker = false)
+		void Populate(std::vector<std::string>& a_names, std::vector<RE::TESForm*>& a_forms, std::vector<bool>& a_bools, std::vector<std::string>& a_texts, bool a_isMarker = false)
 		{
 			a_names.clear();
 			a_forms.clear();
 			a_bools.clear();
-
+			a_texts.clear();
+			
 			// zip for parallel sorting by name, alphabetical
 			using zipped_t = std::pair<std::string, std::pair<RE::TESForm*, bool>>;
 			// construct zip view from formID;
@@ -277,7 +294,6 @@ namespace Serialization
 				if (auto marker = GetForm<RE::TESObjectREFR>(f); marker && a_isMarker) {
 					if (auto extraMapMarker = GetMapMarkerInternal(GetForm<RE::TESObjectREFR>(f)); extraMapMarker && extraMapMarker->mapData) {
 						name = extraMapMarker->mapData->locationName.fullName.c_str();
-						INFO("{} is a MapMarker", name);
 					}
 				}
 
@@ -287,7 +303,7 @@ namespace Serialization
 
 			// instantiate the zipped view for sorting
 			std::vector<zipped_t> zipped = { std::ranges::begin(bases), std::ranges::end(bases) };
-			std::ranges::sort(zipped);  // why can't we just sort views directly lol
+			std::ranges::sort(zipped); 
 
 			// unzip
 			for (auto& [name, data] : zipped) {
@@ -301,6 +317,8 @@ namespace Serialization
 			assert(a_names.size() == zipped.size());
 			assert(a_names.size() == a_forms.size());
 			assert(a_bools.size() == a_forms.size());
+
+			a_texts = std::vector<std::string>(a_names.size(), "NO_HIGHLIGHT");
 		}
 
 		// members
@@ -343,7 +361,6 @@ namespace Serialization
 		}
 	}
 
-
 	static void RevertCallback([[maybe_unused]] SKSE::SerializationInterface* a_intfc) noexcept
 	{
 		for (auto* data : CompletionistData::ManagedData) {
@@ -353,3 +370,124 @@ namespace Serialization
 		}
 	}
 }
+
+namespace FrameworkHandler
+{
+	using namespace Serialization;
+
+	enum class FrameworkID
+	{
+		kArmor = 0,
+		kJewelry = 1,
+		kDragonClaws_V = 2,
+		kDragonClaws_P = 3,
+		kLiquor = 4,
+		kDragonMasks_V = 5,
+		kDragonMasks_P = 6,
+		kWeapons = 7,
+		kItems = 8,
+
+		kBooks_AG = 10,
+		kBooks_HS = 11,
+		kBooks_TY = 12,
+		kBooks_SB = 13,
+		kBooks_ST = 14,
+
+		kBooks_DG = 15,
+		kBooks_DGS = 16,
+
+		kBooks_DB = 17,
+		kBooks_DBS = 18,
+
+		kLocations_DG = 20,
+		kLocations_DB = 21,
+		kLocations_AG = 23,
+		kLocations_HR = 24,
+		kLocations_SZ = 25,
+
+		kDoomstones = 26,
+		kShrines_V = 27,
+		kShrines_P = 28,
+		kBarenziah = 29,
+
+		kAEnchantments_V = 30,
+		kAEnchantments_P = 31,
+		kWEnchantments_V = 32,
+		kWEnchantments_P = 33,
+
+		kFishing_I = 50,
+		kFishing_B = 51,
+		kFishing_A = 52,
+		kFishing_C = 53,
+		kFishing_L = 54,
+		kFishing_S = 55,
+
+		kCreationClub_L = 90,
+		kCreationClub_B = 91,
+		kCreationClub_S = 92,
+		kCreationClub_A = 93,
+		kCreationClub_W = 94,
+		kCreationClub_I = 95,
+
+		// leave this one at end
+		kTotal,
+	};
+
+	static std::unordered_map<FrameworkID, std::vector<std::string>*> NameSet;
+	static std::unordered_map<FrameworkID, std::vector<std::string>*> TextSet;
+	static std::unordered_map<FrameworkID, std::vector<bool>*> BoolSet;
+
+	static std::unordered_map<FrameworkID, std::vector<RE::TESForm*>*> FormSet;
+	static std::unordered_map<FrameworkID, std::vector<uint32_t>*> FoundSet;
+	static std::unordered_map<FrameworkID, std::vector<uint32_t>*> TotalSet;
+	static std::unordered_map<FrameworkID, std::vector<CompletionistData>*> CDataSet;
+
+	static auto& HandleNameSet(FrameworkID a_cat) noexcept
+	{
+		return *NameSet.at(a_cat);
+	}
+
+	static auto& HandleTextSet(FrameworkID a_cat) noexcept
+	{
+		return *TextSet.at(a_cat);
+	}
+
+	static auto& HandleBoolSet(FrameworkID a_cat) noexcept
+	{
+		return *BoolSet.at(a_cat);
+	}
+
+	static auto& HandleFormSet(FrameworkID a_cat) noexcept
+	{
+		return *FormSet.at(a_cat);
+	}
+
+	static auto& HandleFoundSet(FrameworkID a_cat) noexcept
+	{
+		return *FoundSet.at(a_cat);
+	}
+
+	static auto& HandleTotalSet(FrameworkID a_cat) noexcept
+	{
+		return *TotalSet.at(a_cat);
+	}
+
+	static auto& HandleDataSet(FrameworkID a_cat) noexcept
+	{
+		return *CDataSet.at(a_cat);
+	}
+
+	template <FrameworkID a_id>
+	static void RegisterAs(std::vector<std::string>* a_names, std::vector<RE::TESForm*>* a_forms, std::vector<bool>* a_bools, std::vector<std::string>* a_texts, uint32_t* a_found, uint32_t* a_total, CompletionistData* a_data) noexcept
+		requires(a_id != FrameworkID::kTotal) // so no overflow/out of bound access
+	{
+		NameSet.try_emplace(a_id, a_names);
+		FormSet.try_emplace(a_id, a_forms);
+		BoolSet.try_emplace(a_id, a_bools);
+		TextSet.try_emplace(a_id, a_texts);
+
+		FoundSet.try_emplace(a_id, a_found);
+		TotalSet.try_emplace(a_id, a_total);
+		CDataSet.try_emplace(a_id, a_data);
+	}
+} // namespace FrameworkHandler

@@ -198,11 +198,7 @@ namespace CFramework_CreationClub_L {
 		}
 
 		Data.CompileFormArray(CFramework_CreationClub_L::Locations, "");
-		CFramework_CreationClub_L::Data.Populate(NameArray, FormArray, BoolArray, true);
-
-		for (auto& name : NameArray) {
-			TextArray.push_back("$AddLocationHighlight{" + name + "}");
-		}
+		CFramework_CreationClub_L::Data.Populate(NameArray, FormArray, BoolArray, TextArray, true);
 
 		EntriesTotal = FormArray.size();
 		EntriesFound = std::ranges::count(BoolArray, true);
@@ -236,14 +232,6 @@ namespace CFramework_CreationClub_L {
 namespace CFramework_CreationClub_B {
 
 	using namespace CFramework_Master;
-
-	// clang-format off
-
-	constexpr Serialization::FormArray Books = {
-	0x00000,
-	};
-
-	// clang-format on
 
 	Serialization::CompletionistData Data;
 
@@ -436,28 +424,21 @@ namespace CFramework_CreationClub_B {
 
 		if (const auto* Mod = handler->LookupLoadedLightModByName("ccbgssse045-hasedoki.esl"); Mod) {
 			Data.AddForm(0x000804, Mod->GetFilename()); // The Light and the Dark
-			Data.AddForm(0x000805, Mod->GetFilename()); // Arkay the Enemy
+			//Data.AddForm(0x000805, Mod->GetFilename()); // Arkay the Enemy
 			Data.AddForm(0x000839, Mod->GetFilename()); // To Raise the Living
 		}
 
 		//Finish Adding Forms
-
-		Data.CompileFormArray(CFramework_CreationClub_B::Books, "");
 		Data.MergeAsCollectable();
-
-		CFramework_CreationClub_B::Data.Populate(NameArray, FormArray, BoolArray);
-
+		CFramework_CreationClub_B::Data.Populate(NameArray, FormArray, BoolArray, TextArray);
 		for (auto i = 0; i < FormArray.size(); i++) {
 			if (FormArray[i]) {
 				auto* book = static_cast<RE::TESObjectBOOK*>(FormArray[i]);
 				if (book->GetSpell()) {
-					TextArray.push_back("$AddSpellTomeHighlight{" + NameArray[i] + "}{" + book->GetSpell()->GetName() + "}");
+					TextArray[i] = "$AddSpellTomeHighlight{" + NameArray[i] + "}{" + book->GetSpell()->GetName() + "}";
 				}
 				else if (book->TeachesSkill()) {
-					TextArray.push_back("$AddSkillBookHighlight{" + NameArray[i] + "}{" + CFramework_Master::FrameworkAPI::GetBookSkill(book->GetSkill()) + "}");
-				}
-				else {
-					TextArray.push_back("NO_HIGHLIGHT");
+					TextArray[i] = "$AddSkillBookHighlight{" + NameArray[i] + "}{" + CFramework_Master::FrameworkAPI::GetBookSkill(book->GetSkill()) + "}";
 				}
 			}
 		}
@@ -488,12 +469,12 @@ namespace CFramework_CreationClub_B {
 	//-- Framework Functions ( MCM is Entry Complete ) --
 	//---------------------------------------------------
 
-	bool BookHandler::IsOptionCompleted(std::string a_name) {
+	uint32_t BookHandler::IsOptionCompleted(std::string a_name) {
 
 		if (auto t_pos = std::find(NameArray.begin(), NameArray.end(), a_name); t_pos != NameArray.end()) {
-			return BoolArray[std::distance(NameArray.begin(), t_pos)];
+			return uint32_t(BoolArray[std::distance(NameArray.begin(), t_pos)]);
 		}
-		return false;
+		return -1;
 	}
 
 	//---------------------------------------------------
@@ -744,19 +725,15 @@ namespace CFramework_CreationClub_S {
 		Data.CompileFormArray(CFramework_CreationClub_S::Books, "");
 		Data.MergeAsCollectable();
 
-		CFramework_CreationClub_S::Data.Populate(NameArray, FormArray, BoolArray);
-
+		CFramework_CreationClub_S::Data.Populate(NameArray, FormArray, BoolArray, TextArray);
 		for (auto i = 0; i < FormArray.size(); i++) {
 			if (FormArray[i]) {
 				auto* book = static_cast<RE::TESObjectBOOK*>(FormArray[i]);
 				if (book->GetSpell()) {
-					TextArray.push_back("$AddSpellTomeHighlight{" + NameArray[i] + "}{" + book->GetSpell()->GetName() + "}");
+					TextArray[i] = "$AddSpellTomeHighlight{" + NameArray[i] + "}{" + book->GetSpell()->GetName() + "}";
 				}
 				else if (book->TeachesSkill()) {
-					TextArray.push_back("$AddSkillBookHighlight{" + NameArray[i] + "}{" + CFramework_Master::FrameworkAPI::GetBookSkill(book->GetSkill()) + "}");
-				}
-				else {
-					TextArray.push_back("NO_HIGHLIGHT");
+					TextArray[i] = "$AddSkillBookHighlight{" + NameArray[i] + "}{" + CFramework_Master::FrameworkAPI::GetBookSkill(book->GetSkill()) + "}";
 				}
 			}
 		}
@@ -787,12 +764,12 @@ namespace CFramework_CreationClub_S {
 	//-- Framework Functions ( MCM is Entry Complete ) --
 	//---------------------------------------------------
 
-	bool BookHandler::IsOptionCompleted(std::string a_name) {
+	uint32_t BookHandler::IsOptionCompleted(std::string a_name) {
 
 		if (auto t_pos = std::find(NameArray.begin(), NameArray.end(), a_name); t_pos != NameArray.end()) {
-			return BoolArray[std::distance(NameArray.begin(), t_pos)];
+			return uint32_t(BoolArray[std::distance(NameArray.begin(), t_pos)]);
 		}
-		return false;
+		return -1;
 	}
 
 	//---------------------------------------------------
@@ -1032,12 +1009,7 @@ namespace CFramework_CreationClub_A {
 		Data.CompileFormArray(CFramework_CreationClub_A::Armor, "");
 		Data.MergeAsCollectable();
 
-		CFramework_CreationClub_A::Data.Populate(NameArray, FormArray, BoolArray);
-
-		for (auto& name : NameArray) {
-			TextArray.push_back("NO_HIGHLIGHT");
-		}
-
+		CFramework_CreationClub_A::Data.Populate(NameArray, FormArray, BoolArray, TextArray);
 		EntriesTotal = FormArray.size();
 		EntriesFound = std::ranges::count(BoolArray, true);
 	}
@@ -1062,12 +1034,12 @@ namespace CFramework_CreationClub_A {
 //-- Framework Functions ( MCM is Entry Complete ) --
 //---------------------------------------------------
 
-	bool CHandler::IsOptionCompleted(std::string a_name) {
+	uint32_t CHandler::IsOptionCompleted(std::string a_name) {
 
 		if (auto t_pos = std::find(NameArray.begin(), NameArray.end(), a_name); t_pos != NameArray.end()) {
-			return BoolArray[std::distance(NameArray.begin(), t_pos)];
+			return uint32_t(BoolArray[std::distance(NameArray.begin(), t_pos)]);
 		}
-		return false;
+		return -1;
 	}
 
 	//---------------------------------------------------
@@ -1238,12 +1210,7 @@ namespace CFramework_CreationClub_I {
 		Data.CompileFormArray(CFramework_CreationClub_I::Items, "");
 		Data.MergeAsCollectable();
 
-		CFramework_CreationClub_I::Data.Populate(NameArray, FormArray, BoolArray);
-
-		for (auto& name : NameArray) {
-			TextArray.push_back("NO_HIGHLIGHT");
-		}
-
+		CFramework_CreationClub_I::Data.Populate(NameArray, FormArray, BoolArray, TextArray);
 		EntriesTotal = FormArray.size();
 		EntriesFound = std::ranges::count(BoolArray, true);
 	}
@@ -1268,12 +1235,12 @@ namespace CFramework_CreationClub_I {
 //-- Framework Functions ( MCM is Entry Complete ) --
 //---------------------------------------------------
 
-	bool CHandler::IsOptionCompleted(std::string a_name) {
+	uint32_t CHandler::IsOptionCompleted(std::string a_name) {
 
 		if (auto t_pos = std::find(NameArray.begin(), NameArray.end(), a_name); t_pos != NameArray.end()) {
-			return BoolArray[std::distance(NameArray.begin(), t_pos)];
+			return uint32_t(BoolArray[std::distance(NameArray.begin(), t_pos)]);
 		}
-		return false;
+		return -1;
 	}
 
 	//---------------------------------------------------
@@ -1521,12 +1488,7 @@ namespace CFramework_CreationClub_W {
 		Data.CompileFormArray(CFramework_CreationClub_W::Weapons, "");
 		Data.MergeAsCollectable();
 
-		CFramework_CreationClub_W::Data.Populate(NameArray, FormArray, BoolArray);
-
-		for (auto& name : NameArray) {
-			TextArray.push_back("NO_HIGHLIGHT");
-		}
-
+		CFramework_CreationClub_W::Data.Populate(NameArray, FormArray, BoolArray, TextArray);
 		EntriesTotal = FormArray.size();
 		EntriesFound = std::ranges::count(BoolArray, true);
 	}
@@ -1551,12 +1513,12 @@ namespace CFramework_CreationClub_W {
 	//-- Framework Functions ( MCM is Entry Complete ) --
 	//---------------------------------------------------
 
-	bool CHandler::IsOptionCompleted(std::string a_name) {
+	uint32_t CHandler::IsOptionCompleted(std::string a_name) {
 
 		if (auto t_pos = std::find(NameArray.begin(), NameArray.end(), a_name); t_pos != NameArray.end()) {
-			return BoolArray[std::distance(NameArray.begin(), t_pos)];
+			return uint32_t(BoolArray[std::distance(NameArray.begin(), t_pos)]);
 		}
-		return false;
+		return -1;
 	}
 
 	//---------------------------------------------------

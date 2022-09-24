@@ -114,7 +114,7 @@ namespace CFramework_DragonClaws_V {
 		Data.CompileFormArray(CFramework_DragonClaws_V::DragonbornForms, "Dragonborn.esm");
 		Data.MergeAsCollectable();
 
-		CFramework_DragonClaws_V::Data.Populate(NameArray, FormArray, BoolArray);
+		CFramework_DragonClaws_V::Data.Populate(NameArray, FormArray, BoolArray, TextArray);
 		
 		EntriesTotal = FormArray.size();
 		EntriesFound = std::ranges::count(BoolArray, true);
@@ -140,12 +140,12 @@ namespace CFramework_DragonClaws_V {
 	//-- Framework Functions ( MCM is Entry Complete ) --
 	//---------------------------------------------------
 
-	bool CHandler::IsOptionCompleted(std::string a_name) {
+	uint32_t CHandler::IsOptionCompleted(std::string a_name) {
 
 		if (auto t_pos = std::find(NameArray.begin(), NameArray.end(), a_name); t_pos != NameArray.end()) {
-			return BoolArray[std::distance(NameArray.begin(), t_pos)];
+			return uint32_t(BoolArray[std::distance(NameArray.begin(), t_pos)]);
 		}
-		return false;
+		return -1;
 	}
 
 	//---------------------------------------------------
@@ -295,7 +295,7 @@ namespace CFramework_DragonClaws_P {
 		Data.CompileFormArray(CFramework_DragonClaws_P::PatchForms, "Skyrim.esm");
 		Data.MergeAsCollectable();
 
-		CFramework_DragonClaws_P::Data.Populate(NameArray, FormArray, BoolArray);
+		CFramework_DragonClaws_P::Data.Populate(NameArray, FormArray, BoolArray, TextArray);
 
 		EntriesTotal = FormArray.size();
 		EntriesFound = std::ranges::count(BoolArray, true);
@@ -321,12 +321,12 @@ namespace CFramework_DragonClaws_P {
 	//-- Framework Functions ( MCM is Entry Complete ) --
 	//---------------------------------------------------
 
-	bool CHandler::IsOptionCompleted(std::string a_name) {
+	uint32_t CHandler::IsOptionCompleted(std::string a_name) {
 
 		if (auto t_pos = std::find(NameArray.begin(), NameArray.end(), a_name); t_pos != NameArray.end()) {
-			return BoolArray[std::distance(NameArray.begin(), t_pos)];
+			return uint32_t(BoolArray[std::distance(NameArray.begin(), t_pos)]);
 		}
-		return false;
+		return -1;
 	}
 
 	//---------------------------------------------------

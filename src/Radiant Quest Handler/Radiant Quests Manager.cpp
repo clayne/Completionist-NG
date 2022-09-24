@@ -25,7 +25,7 @@ namespace Quest_Manager
 
 				RE::BSTSmartPointer<RE::BSScript::IStackCallbackFunctor> funcReturn;
 				auto args = RE::MakeFunctionArguments(RE::BSFixedString(questID), RE::BSFixedString(AliasName));
-				papyrusVM->DispatchMethodCall2(questHandle, "Completionist_QuestValidationScript", "ProcessQuest_CW", args, funcReturn);
+				papyrusVM->DispatchMethodCall2(questHandle, "Completionist_QuestsScript", "ProcessQuest_CW", args, funcReturn);
 				return;
 			}
 			return;

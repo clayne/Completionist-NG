@@ -36,8 +36,8 @@ namespace CFramework_Liquor
 		static void			InjectAndCompileData();
 		static void			UpdateFoundForms();
 
+		static uint32_t		IsOptionCompleted(std::string a_name);
 		static void			SetOptionCompleted(std::string a_name);
-		static bool			IsOptionCompleted(std::string a_name);
 
 	private:
 

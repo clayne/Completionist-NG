@@ -9,10 +9,19 @@
 #include "Items/CFramework_Liquor.hpp"
 #include "Items/CFramework_Masks.hpp"
 #include "Items/CFramework_Weapons.hpp"
+#include "Items/CFramework_Barenziah.hpp"
 
 //Misc Frameworks
 #include "Books/CFramework_Books.hpp"
 #include "Locations/CFramework_Locations.hpp"
+#include "Enchantments/CFramework_Enchantments.hpp"
+
+//Blessings Frameworks
+#include "Blessings/CFramework_Shrines.hpp"
+#include "Blessings/CFramework_Doomstones.hpp"
+
+// Patches
+#include "Patches/Fishing/CFramework_Fishing.hpp"
 
 //Creation Club
 #include "Creation Club/CFramework_CreationClub.hpp"
@@ -20,13 +29,14 @@
 namespace CFramework_Master {
 
 	inline Serialization::CompletionistData FoundItemData;
+	inline Serialization::CompletionistData FoundItemData_NoShow;
 
 	std::vector<RE::TESForm*> EmptyFormArray;
 	std::vector<std::string> EmptyNameArray;
 	std::vector<std::string> EmptyTextArray;
 	std::vector<bool> EmptyBoolArray;
 
-	ScriptObjectPtr MCMScript2;
+	inline ScriptObjectPtr MCMScript2;
 
 	//---------------------------------------------------
 	//-- Framework Functions ( Master Registration ) ----
@@ -34,17 +44,22 @@ namespace CFramework_Master {
 
 	void FrameworkAPI::Register() {
 
+		MCMScript2 = ScriptObject::FromForm(static_cast<RE::TESForm*>(RE::TESDataHandler::GetSingleton()->LookupForm(0x00806, "Completionist.esp")), "Completionist_MCMScript2");
+
 		FoundItemData.SetAsSerializable();
+		FoundItemData_NoShow.SetAsSerializable();
 
 		auto papyrus = SKSE::GetPapyrusInterface();
 		papyrus->Register(FrameworkAPI::RegisterFunctions);
 
 		CFramework_CCManager::CHandler::InstallFramework();
 
+		CFramework_Items::CHandler::InstallFramework();
 		CFramework_Armor::CHandler::InstallFramework();
 		CFramework_Jewelry::CHandler::InstallFramework();
 		CFramework_Liquor::CHandler::InstallFramework();
 		CFramework_Weapons::CHandler::InstallFramework();
+		CFramework_Barenziah::CHandler::InstallFramework();
 
 		CFramework_DragonClaws_V::CHandler::InstallFramework();
 		CFramework_DragonClaws_P::CHandler::InstallFramework();
@@ -53,6 +68,17 @@ namespace CFramework_Master {
 
 		CFramework_BooksManager::CHandler::InstallFramework();
 		CFramework_LocationsManager::CHandler::InstallFramework();
+		CFramework_EnchantmentsManager::CHandler::InstallFramework();
+
+		// Blessings 
+		CFramework_Shrines_V::CHandler::InstallFramework();
+		CFramework_Shrines_P::CHandler::InstallFramework();
+		CFramework_Doomstones::CHandler::InstallFramework();
+
+		// Patches
+		CPatchManager_Fishing::CHandler::InstallFramework();
+
+		// Finished
 		RE::DebugMessageBox("Finished Installing Frameworks");
 	}
 	
@@ -77,6 +103,20 @@ namespace CFramework_Master {
 		a_vm->RegisterFunction("Framework_IsOptionCompleted", "Completionist_Native", Framework_IsOptionCompleted);
 		a_vm->RegisterFunction("Framework_SetOptionCompleted", "Completionist_Native", Framework_SetOptionCompleted);
 		return true;
+	}
+
+	//---------------------------------------------------
+	//-- Framework Functions ( Send Notification ) ------
+	//---------------------------------------------------
+
+	void FrameworkAPI::SendNotification(std::string a_msg, std::string a_setting) {
+
+		auto MCMScript = ScriptObject::FromForm(static_cast<RE::TESForm*>(RE::TESDataHandler::GetSingleton()->LookupForm(0x00800, "Completionist.esp")), "Completionist_MCMScript");
+		if (!MCMScript->GetProperty(a_setting)->GetBool()) { return; }
+
+		auto message = fmt::format("<font color='{:s}'>{:s}</font>"sv, MCMScript->GetProperty("ColourString")->GetString(), a_msg);
+		if (!MCMScript->GetProperty("NotificationColourEnabled")->GetBool()) { RE::DebugNotification(a_msg.c_str()); return; }
+		RE::DebugNotification(message.c_str());
 	}
 
 	//---------------------------------------------------
@@ -109,22 +149,37 @@ namespace CFramework_Master {
 
 	void FrameworkAPI::Framework_Load() {
 
-		CFramework_CCManager::CHandler::UpdateFoundForms();
+		
 
+		//Items
 		CFramework_Armor::CHandler::UpdateFoundForms();
-		CFramework_Weapons::CHandler::UpdateFoundForms();
-
-		CFramework_Jewelry::CHandler::UpdateFoundForms();
+		CFramework_Items::CHandler::UpdateFoundForms();
 		CFramework_Liquor::CHandler::UpdateFoundForms();
+		CFramework_Jewelry::CHandler::UpdateFoundForms();
+		CFramework_Weapons::CHandler::UpdateFoundForms();
+		CFramework_Barenziah::CHandler::UpdateFoundForms();
 
+		//Dragon Claws
 		CFramework_DragonClaws_V::CHandler::UpdateFoundForms();
 		CFramework_DragonClaws_P::CHandler::UpdateFoundForms();
-
 		CFramework_DragonMasks_V::CHandler::UpdateFoundForms();
 		CFramework_DragonMasks_P::CHandler::UpdateFoundForms();
 
+		//Misc
 		CFramework_BooksManager::CHandler::UpdateFoundForms();
 		CFramework_LocationsManager::CHandler::UpdateFoundForms();
+		CFramework_EnchantmentsManager::CHandler::UpdateFoundForms();
+
+		// Blessings 
+		CFramework_Shrines_V::CHandler::UpdateFoundForms();
+		CFramework_Shrines_P::CHandler::UpdateFoundForms();
+		CFramework_Doomstones::CHandler::UpdateFoundForms();
+
+		//Creation Club
+		CFramework_CCManager::CHandler::UpdateFoundForms();
+
+		// Patches
+		CPatchManager_Fishing::CHandler::UpdateFoundForms();
 	}
 
 	//---------------------------------------------------
@@ -137,29 +192,35 @@ namespace CFramework_Master {
 
 			//-------------------------------------------- Items
 
-		case 00:
+		case 0:
 			return CFramework_Armor::EntriesTotal;
 
-		case 01:
+		case 1:
 			return CFramework_Jewelry::EntriesTotal;
 
-		case 02:
+		case 2:
 			return CFramework_DragonClaws_V::EntriesTotal;
 
-		case 03:
+		case 3:
 			return CFramework_DragonClaws_P::EntriesTotal;
 
-		case 04:
+		case 4:
 			return CFramework_Liquor::EntriesTotal;
 
-		case 05:
+		case 5:
 			return CFramework_DragonMasks_V::EntriesTotal;
 
-		case 06:
+		case 6:
 			return CFramework_DragonMasks_P::EntriesTotal;
 
-		case 07:
+		case 7:
 			return CFramework_Weapons::EntriesTotal;
+
+		case 8:
+			return CFramework_Items::EntriesTotal;
+
+		case 29:
+			return CFramework_Barenziah::EntriesTotal;
 
 			//-------------------------------------------- Books
 
@@ -178,6 +239,18 @@ namespace CFramework_Master {
 		case 14:
 			return CFramework_Books_ST::EntriesTotal;
 
+		case 15:
+			return CFramework_Books_DG::EntriesTotal;
+
+		case 16:
+			return CFramework_Books_DGS::EntriesTotal;
+
+		case 17:
+			return CFramework_Books_DB::EntriesTotal;
+
+		case 18:
+			return CFramework_Books_DBS::EntriesTotal;
+
 			//-------------------------------------------- Locations
 
 		case 20:
@@ -194,6 +267,51 @@ namespace CFramework_Master {
 
 		case 25:
 			return CFramework_Locations_SZ::EntriesTotal;
+
+			//-------------------------------------------- Blessings
+
+		case 26:
+			return CFramework_Doomstones::EntriesTotal;
+
+		case 27:
+			return CFramework_Shrines_V::EntriesTotal;
+
+		case 28:
+			return CFramework_Shrines_P::EntriesTotal;
+
+			//-------------------------------------------- Enchantments
+
+		case 30:
+			return CFramework_AEnchantments_V::EntriesTotal;
+
+		case 31:
+			return CFramework_AEnchantments_P::EntriesTotal;
+
+		case 32:
+			return CFramework_WEnchantments_V::EntriesTotal;
+
+		case 33:
+			return CFramework_WEnchantments_P::EntriesTotal;
+
+			//-------------------------------------------- Fishing
+
+		case 50:
+			return CPatch_FishingItems::EntriesTotal;
+
+		case 51:
+			return CPatch_FishingBooks::EntriesTotal;
+
+		case 52:
+			return CPatch_FishingSpots_A::EntriesTotal;
+
+		case 53:
+			return CPatch_FishingSpots_C::EntriesTotal;
+
+		case 54:
+			return CPatch_FishingSpots_L::EntriesTotal;
+
+		case 55:
+			return CPatch_FishingSpots_S::EntriesTotal;
 
 			//-------------------------------------------- Creation CLub
 
@@ -230,29 +348,35 @@ namespace CFramework_Master {
 
 		//-------------------------------------------- Items
 
-	case 00:
+	case 0:
 		return CFramework_Armor::EntriesFound;
 
-	case 01:
+	case 1:
 		return CFramework_Jewelry::EntriesFound;
 
-	case 02:
+	case 2:
 		return CFramework_DragonClaws_V::EntriesFound;
 
-	case 03:
+	case 3:
 		return CFramework_DragonClaws_P::EntriesFound;
 
-	case 04:
+	case 4:
 		return CFramework_Liquor::EntriesFound;
 
-	case 05:
+	case 5:
 		return CFramework_DragonMasks_V::EntriesFound;
 
-	case 06:
+	case 6:
 		return CFramework_DragonMasks_P::EntriesFound;
 
-	case 07:
+	case 7:
 		return CFramework_Weapons::EntriesFound;
+
+	case 8:
+		return CFramework_Items::EntriesFound;
+
+	case 29:
+		return CFramework_Barenziah::EntriesFound;
 
 		//-------------------------------------------- Books
 
@@ -271,6 +395,18 @@ namespace CFramework_Master {
 	case 14:
 		return CFramework_Books_ST::EntriesFound;
 
+	case 15:
+		return CFramework_Books_DG::EntriesFound;
+
+	case 16:
+		return CFramework_Books_DGS::EntriesFound;
+
+	case 17:
+		return CFramework_Books_DB::EntriesFound;
+
+	case 18:
+		return CFramework_Books_DBS::EntriesFound;
+
 		//-------------------------------------------- Locations
 
 	case 20:
@@ -287,6 +423,51 @@ namespace CFramework_Master {
 
 	case 25:
 		return CFramework_Locations_SZ::EntriesFound;
+
+		//-------------------------------------------- Blessings
+
+	case 26:
+		return CFramework_Doomstones::EntriesFound;
+
+	case 27:
+		return CFramework_Shrines_V::EntriesFound;
+
+	case 28:
+		return CFramework_Shrines_P::EntriesFound;
+
+		//-------------------------------------------- Enchantments
+
+	case 30:
+		return CFramework_AEnchantments_V::EntriesFound;
+
+	case 31:
+		return CFramework_AEnchantments_P::EntriesFound;
+
+	case 32:
+		return CFramework_WEnchantments_V::EntriesFound;
+
+	case 33:
+		return CFramework_WEnchantments_P::EntriesFound;
+
+		//-------------------------------------------- Fishing
+
+	case 50:
+		return CPatch_FishingItems::EntriesFound;
+
+	case 51:
+		return CPatch_FishingBooks::EntriesFound;
+
+	case 52:
+		return CPatch_FishingSpots_A::EntriesFound;
+
+	case 53:
+		return CPatch_FishingSpots_C::EntriesFound;
+
+	case 54:
+		return CPatch_FishingSpots_L::EntriesFound;
+
+	case 55:
+		return CPatch_FishingSpots_S::EntriesFound;
 
 		//-------------------------------------------- Creation CLub
 
@@ -347,6 +528,12 @@ namespace CFramework_Master {
 		case 07:
 			return CFramework_Weapons::FormArray;
 
+		case 8:
+			return CFramework_Items::FormArray;
+
+		case 29:
+			return CFramework_Barenziah::FormArray;
+
 			//-------------------------------------------- Books
 
 		case 10:
@@ -364,6 +551,18 @@ namespace CFramework_Master {
 		case 14:
 			return CFramework_Books_ST::FormArray;
 
+		case 15:
+			return CFramework_Books_DG::FormArray;
+
+		case 16:
+			return CFramework_Books_DGS::FormArray;
+
+		case 17:
+			return CFramework_Books_DB::FormArray;
+
+		case 18:
+			return CFramework_Books_DBS::FormArray;
+
 			//-------------------------------------------- Locations
 
 		case 20:
@@ -380,6 +579,51 @@ namespace CFramework_Master {
 
 		case 25:
 			return CFramework_Locations_SZ::FormArray;
+
+			//-------------------------------------------- Blessings
+
+		case 26:
+			return CFramework_Doomstones::FormArray;
+
+		case 27:
+			return CFramework_Shrines_V::FormArray;
+
+		case 28:
+			return CFramework_Shrines_P::FormArray;
+
+			//-------------------------------------------- Enchantments
+
+		case 30:
+			return CFramework_AEnchantments_V::FormArray;
+
+		case 31:
+			return CFramework_AEnchantments_P::FormArray;
+
+		case 32:
+			return CFramework_WEnchantments_V::FormArray;
+
+		case 33:
+			return CFramework_WEnchantments_P::FormArray;
+
+			//-------------------------------------------- Fishing
+
+		case 50:
+			return CPatch_FishingItems::FormArray;
+
+		case 51:
+			return CPatch_FishingBooks::FormArray;
+
+		case 52:
+			return CPatch_FishingSpots_A::FormArray;
+
+		case 53:
+			return CPatch_FishingSpots_C::FormArray;
+
+		case 54:
+			return CPatch_FishingSpots_L::FormArray;
+
+		case 55:
+			return CPatch_FishingSpots_S::FormArray;
 
 			//-------------------------------------------- Creation CLub
 
@@ -416,29 +660,36 @@ namespace CFramework_Master {
 
 			//-------------------------------------------- Items
 
-		case 00:
-			return CFramework_Armor::NameArray;
+		case 0:
+			return FrameworkHandler::HandleNameSet(FrameworkHandler::FrameworkID(a_ID));
+			//return CFramework_Armor::NameArray;
 
-		case 01:
+		case 1:
 			return CFramework_Jewelry::NameArray;
 
-		case 02:
+		case 2:
 			return CFramework_DragonClaws_V::NameArray;
 
-		case 03:
+		case 3:
 			return CFramework_DragonClaws_P::NameArray;
 
-		case 04:
+		case 4:
 			return CFramework_Liquor::NameArray;
 
-		case 05:
+		case 5:
 			return CFramework_DragonMasks_V::NameArray;
 
-		case 06:
+		case 6:
 			return CFramework_DragonMasks_P::NameArray;
 
-		case 07:
+		case 7:
 			return CFramework_Weapons::NameArray;
+
+		case 8:
+			return CFramework_Items::NameArray;
+
+		case 29:
+			return CFramework_Barenziah::NameArray;
 
 			//-------------------------------------------- Books
 
@@ -457,6 +708,18 @@ namespace CFramework_Master {
 		case 14:
 			return CFramework_Books_ST::NameArray;
 
+		case 15:
+			return CFramework_Books_DG::NameArray;
+
+		case 16:
+			return CFramework_Books_DGS::NameArray;
+
+		case 17:
+			return CFramework_Books_DB::NameArray;
+
+		case 18:
+			return CFramework_Books_DBS::NameArray;
+
 			//-------------------------------------------- Locations
 
 		case 20:
@@ -473,6 +736,51 @@ namespace CFramework_Master {
 
 		case 25:
 			return CFramework_Locations_SZ::NameArray;
+
+			//-------------------------------------------- Blessings
+
+		case 26:
+			return CFramework_Doomstones::NameArray;
+
+		case 27:
+			return CFramework_Shrines_V::NameArray;
+
+		case 28:
+			return CFramework_Shrines_P::NameArray;
+
+			//-------------------------------------------- Enchantments
+
+		case 30:
+			return CFramework_AEnchantments_V::NameArray;
+
+		case 31:
+			return CFramework_AEnchantments_P::NameArray;
+
+		case 32:
+			return CFramework_WEnchantments_V::NameArray;
+
+		case 33:
+			return CFramework_WEnchantments_P::NameArray;
+
+			//-------------------------------------------- Fishing
+
+		case 50:
+			return CPatch_FishingItems::NameArray;
+
+		case 51:
+			return CPatch_FishingBooks::NameArray;
+
+		case 52:
+			return CPatch_FishingSpots_A::NameArray;
+
+		case 53:
+			return CPatch_FishingSpots_C::NameArray;
+
+		case 54:
+			return CPatch_FishingSpots_L::NameArray;
+
+		case 55:
+			return CPatch_FishingSpots_S::NameArray;
 
 			//-------------------------------------------- Creation CLub
 
@@ -533,6 +841,12 @@ namespace CFramework_Master {
 		case 07:
 			return CFramework_Weapons::TextArray;
 
+		case 8:
+			return CFramework_Items::TextArray;
+
+		case 29:
+			return CFramework_Barenziah::TextArray;
+
 			//-------------------------------------------- Books
 
 		case 10:
@@ -550,6 +864,18 @@ namespace CFramework_Master {
 		case 14:
 			return CFramework_Books_ST::TextArray;
 
+		case 15:
+			return CFramework_Books_DG::TextArray;
+
+		case 16:
+			return CFramework_Books_DGS::TextArray;
+
+		case 17:
+			return CFramework_Books_DB::TextArray;
+
+		case 18:
+			return CFramework_Books_DBS::TextArray;
+
 			//-------------------------------------------- Locations
 
 		case 20:
@@ -566,6 +892,51 @@ namespace CFramework_Master {
 
 		case 25:
 			return CFramework_Locations_SZ::TextArray;
+
+			//-------------------------------------------- Blessings
+
+		case 26:
+			return CFramework_Doomstones::TextArray;
+
+		case 27:
+			return CFramework_Shrines_V::TextArray;
+
+		case 28:
+			return CFramework_Shrines_P::TextArray;
+
+			//-------------------------------------------- Enchantments
+
+		case 30:
+			return CFramework_AEnchantments_V::TextArray;
+
+		case 31:
+			return CFramework_AEnchantments_P::TextArray;
+
+		case 32:
+			return CFramework_WEnchantments_V::TextArray;
+
+		case 33:
+			return CFramework_WEnchantments_P::TextArray;
+
+			//-------------------------------------------- Fishing
+
+		case 50:
+			return CPatch_FishingItems::TextArray;
+
+		case 51:
+			return CPatch_FishingBooks::TextArray;
+
+		case 52:
+			return CPatch_FishingSpots_A::TextArray;
+
+		case 53:
+			return CPatch_FishingSpots_C::TextArray;
+
+		case 54:
+			return CPatch_FishingSpots_L::TextArray;
+
+		case 55:
+			return CPatch_FishingSpots_S::TextArray;
 
 			//-------------------------------------------- Creation CLub
 
@@ -626,6 +997,12 @@ namespace CFramework_Master {
 		case 07:
 			return CFramework_Weapons::BoolArray;
 
+		case 8:
+			return CFramework_Items::BoolArray;
+
+		case 29:
+			return CFramework_Barenziah::BoolArray;
+
 			//-------------------------------------------- Books
 
 		case 10:
@@ -643,6 +1020,18 @@ namespace CFramework_Master {
 		case 14:
 			return CFramework_Books_ST::BoolArray;
 
+		case 15:
+			return CFramework_Books_DG::BoolArray;
+
+		case 16:
+			return CFramework_Books_DGS::BoolArray;
+
+		case 17:
+			return CFramework_Books_DB::BoolArray;
+
+		case 18:
+			return CFramework_Books_DBS::BoolArray;
+
 			//-------------------------------------------- Locations
 
 		case 20:
@@ -659,6 +1048,51 @@ namespace CFramework_Master {
 
 		case 25:
 			return CFramework_Locations_SZ::BoolArray;
+
+			//-------------------------------------------- Blessings
+
+		case 26:
+			return CFramework_Doomstones::BoolArray;
+
+		case 27:
+			return CFramework_Shrines_V::BoolArray;
+
+		case 28:
+			return CFramework_Shrines_P::BoolArray;
+
+			//-------------------------------------------- Enchantments
+
+		case 30:
+			return CFramework_AEnchantments_V::BoolArray;
+
+		case 31:
+			return CFramework_AEnchantments_P::BoolArray;
+
+		case 32:
+			return CFramework_WEnchantments_V::BoolArray;
+
+		case 33:
+			return CFramework_WEnchantments_P::BoolArray;
+
+			//-------------------------------------------- Fishing
+
+		case 50:
+			return CPatch_FishingItems::BoolArray;
+
+		case 51:
+			return CPatch_FishingBooks::BoolArray;
+
+		case 52:
+			return CPatch_FishingSpots_A::BoolArray;
+
+		case 53:
+			return CPatch_FishingSpots_C::BoolArray;
+
+		case 54:
+			return CPatch_FishingSpots_L::BoolArray;
+
+		case 55:
+			return CPatch_FishingSpots_S::BoolArray;
 
 			//-------------------------------------------- Creation CLub
 
@@ -689,7 +1123,7 @@ namespace CFramework_Master {
 	//-- Framework Functions ( MCM Getter - Status ) ----
 	//---------------------------------------------------
 
-	bool FrameworkAPI::Framework_IsOptionCompleted(RE::StaticFunctionTag*, uint32_t a_ID, std::string a_name) {
+	uint32_t FrameworkAPI::Framework_IsOptionCompleted(RE::StaticFunctionTag*, uint32_t a_ID, std::string a_name) {
 
 		switch (a_ID) {
 
@@ -719,6 +1153,12 @@ namespace CFramework_Master {
 		case 07:
 			return CFramework_Weapons::CHandler::IsOptionCompleted(a_name);
 
+		case 8:
+			return CFramework_Items::CHandler::IsOptionCompleted(a_name);
+
+		case 29:
+			return CFramework_Barenziah::CHandler::IsOptionCompleted(a_name);
+
 			//-------------------------------------------- Books
 
 		case 10:
@@ -735,6 +1175,51 @@ namespace CFramework_Master {
 
 		case 14:
 			return CFramework_Books_ST::BookHandler::IsOptionCompleted(a_name);
+
+		case 15:
+			return CFramework_Books_DG::BookHandler::IsOptionCompleted(a_name);
+
+		case 16:
+			return CFramework_Books_DGS::BookHandler::IsOptionCompleted(a_name);
+
+		case 17:
+			return CFramework_Books_DB::BookHandler::IsOptionCompleted(a_name);
+
+		case 18:
+			return CFramework_Books_DBS::BookHandler::IsOptionCompleted(a_name);
+
+			//-------------------------------------------- Blessings
+
+		case 26:
+			return CFramework_Doomstones::CHandler::IsOptionCompleted(a_name);
+
+		case 27:
+			return CFramework_Shrines_V::CHandler::IsOptionCompleted(a_name);
+
+		case 28:
+			return CFramework_Shrines_P::CHandler::IsOptionCompleted(a_name);
+
+			//-------------------------------------------- Enchantments
+
+		case 30:
+			return CFramework_AEnchantments_V::CHandler::IsOptionCompleted(a_name);
+
+		case 31:
+			return CFramework_AEnchantments_P::CHandler::IsOptionCompleted(a_name);
+
+		case 32:
+			return CFramework_WEnchantments_V::CHandler::IsOptionCompleted(a_name);
+
+		case 33:
+			return CFramework_WEnchantments_P::CHandler::IsOptionCompleted(a_name);
+
+			//-------------------------------------------- Fishing
+
+		case 50:
+			return CPatch_FishingItems::CHandler::IsOptionCompleted(a_name);;
+
+		case 51:
+			return CPatch_FishingBooks::BHandler::IsOptionCompleted(a_name);;
 
 		//-------------------------------------------- Creation CLub
 
@@ -754,7 +1239,7 @@ namespace CFramework_Master {
 			return CFramework_CreationClub_I::CHandler::IsOptionCompleted(a_name);
 
 		default:
-			return false;
+			return -1;
 		}
 	}
 
@@ -797,7 +1282,15 @@ namespace CFramework_Master {
 			break;
 
 		case 07:
-			CFramework_Weapons::CHandler::CHandler::SetOptionCompleted(a_name);
+			CFramework_Weapons::CHandler::SetOptionCompleted(a_name);
+			break;
+
+		case 8:
+			CFramework_Items::CHandler::SetOptionCompleted(a_name);
+			break;
+
+		case 29:
+			CFramework_Barenziah::CHandler::SetOptionCompleted(a_name);
 			break;
 
 			//-------------------------------------------- Books
@@ -820,6 +1313,64 @@ namespace CFramework_Master {
 
 		case 14:
 			CFramework_Books_ST::BookHandler::SetOptionCompleted(a_name);
+			break;
+
+		case 15:
+			CFramework_Books_DG::BookHandler::SetOptionCompleted(a_name);
+			break;
+
+		case 16:
+			CFramework_Books_DGS::BookHandler::SetOptionCompleted(a_name);
+			break;
+
+		case 17:
+			CFramework_Books_DB::BookHandler::SetOptionCompleted(a_name);
+			break;
+
+		case 18:
+			CFramework_Books_DBS::BookHandler::SetOptionCompleted(a_name);
+			break;
+
+			//-------------------------------------------- Blessings
+
+		case 26:
+			CFramework_Doomstones::CHandler::SetOptionCompleted(a_name);
+			break;
+
+		case 27:
+			CFramework_Shrines_V::CHandler::SetOptionCompleted(a_name);
+			break;
+
+		case 28:
+			CFramework_Shrines_P::CHandler::SetOptionCompleted(a_name);
+			break;
+
+			//-------------------------------------------- Enchantments
+
+		case 30:
+			CFramework_AEnchantments_V::CHandler::SetOptionCompleted(a_name);
+			break;
+
+		case 31:
+			CFramework_AEnchantments_P::CHandler::SetOptionCompleted(a_name);
+			break;
+
+		case 32:
+			CFramework_WEnchantments_V::CHandler::SetOptionCompleted(a_name);
+			break;
+
+		case 33:
+			CFramework_WEnchantments_P::CHandler::SetOptionCompleted(a_name);
+			break;
+
+			//-------------------------------------------- Fishing
+
+		case 50:
+			CPatch_FishingItems::CHandler::SetOptionCompleted(a_name);
+			break;
+
+		case 51:
+			CPatch_FishingBooks::BHandler::SetOptionCompleted(a_name);
 			break;
 
 			//-------------------------------------------- Creation CLub
@@ -847,61 +1398,6 @@ namespace CFramework_Master {
 		default:
 			break;
 		}
-	}
-
-	//---------------------------------------------------
-	//-- Framework Functions ( Show Message - Main ) ----
-	//---------------------------------------------------
-
-	void FrameworkAPI::ShowMessageMainMCM(RE::BSFixedString a_msg) {
-
-		auto papyrusVM = RE::BSScript::Internal::VirtualMachine::GetSingleton();
-		RE::VMHandle questHandle;
-
-		if (GetQuestHandle(papyrusVM, std::string("Completionist_Main"), questHandle)) {
-
-			RE::BSTSmartPointer<RE::BSScript::IStackCallbackFunctor> funcReturn;
-			auto args = RE::MakeFunctionArguments(RE::BSFixedString(a_msg));
-			papyrusVM->DispatchMethodCall2(questHandle, "Completionist_MCMScript", "_ShowMessage", args, funcReturn);
-			return;
-		}
-	}
-
-	//---------------------------------------------------
-	//-- Framework Functions ( Show Message - Misc ) ----
-	//---------------------------------------------------
-
-	void FrameworkAPI::ShowMessageMiscMCM(RE::BSFixedString a_msg) {
-
-		auto papyrusVM = RE::BSScript::Internal::VirtualMachine::GetSingleton();
-		RE::VMHandle questHandle;
-
-		if (GetQuestHandle(papyrusVM, std::string("Completionist_Misc"), questHandle)) {
-
-			RE::BSTSmartPointer<RE::BSScript::IStackCallbackFunctor> funcReturn;
-			auto args = RE::MakeFunctionArguments(RE::BSFixedString(a_msg));
-			papyrusVM->DispatchMethodCall2(questHandle, "Completionist_MCMScript2", "_ShowMessage", args, funcReturn);
-			return;
-		}
-
-	}
-
-	//---------------------------------------------------
-	//-- Framework Functions ( Get Quest Handle ) -------
-	//---------------------------------------------------
-
-	bool FrameworkAPI::GetQuestHandle(RE::BSScript::IVirtualMachine* a_vm, std::string ScriptName, RE::VMHandle& handleOut) {
-
-		auto handlePolicy = a_vm->GetObjectHandlePolicy();
-		if (!handlePolicy) { return false; }
-
-		auto quest = RE::TESForm::LookupByEditorID(ScriptName);
-		if (!quest) { return false; }
-
-		handleOut = handlePolicy->GetHandleForObject(static_cast<RE::VMTypeID>(quest->GetFormType()), quest);
-		if (!handleOut) { return false; }
-
-		return true;
 	}
 
 	//---------------------------------------------------

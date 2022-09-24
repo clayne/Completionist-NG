@@ -36,7 +36,7 @@ namespace CFramework_Armor
 		static void			InjectAndCompileData();
 		static void			UpdateFoundForms();
 
-		static bool			IsOptionCompleted(std::string a_name);
+		static uint32_t		IsOptionCompleted(std::string a_name);
 		static void			SetOptionCompleted(std::string a_name);
 
 	private:

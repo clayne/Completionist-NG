@@ -1,30 +1,20 @@
 #include "Serialization.hpp"
-#include "CFramework_Jewelry.hpp"
+#include "CFramework_Doomstones.hpp"
 #include "Frameworks/FrameworkMaster.hpp"
 #include "Internal Utility/ScriptObject.hpp"
 
 #undef AddForm
 
-namespace CFramework_Jewelry {
+namespace CFramework_Doomstones {
 
 	using namespace CFramework_Master;
 
 	// clang-format off
-	constexpr Serialization::FormArray SkyrimForms = {
-		0x0F5A1D,0x0DA735,0x0C5809,0x0D8482,0x02584C,0x0D3BDB,
-		0x0D5047,0x0DA733,0x076F12,0x06B218,0x068B83,0x0DA734,
-		0x090E32,0x02C37B,0x024CFF,0x0DA732,0x0403A9,0x0F5A1C,
-		0x01CB34,0x0F6911,0x094E3E,0x0C72E8,0x02D773,0x107E2D,
-		0x0F1B33,0x0C891D,0x0663DA,0x0233D0,0x0D2328,0x0D4FF7,
+	constexpr Serialization::FormArray DoomStoneForms = {
+	0x0D2331,0x0D2334,0x0D2330,0x0D2336,0x0D2332,0x0D232E,0x0D2337,0x0D2339,
+	0x0D2335,0x0D2333,0x0D232F,0x0D2338,0x0D232D,
 	};
 
-	constexpr Serialization::FormArray DawnguardForms = {
-		0x011CF5,0x00E7FD,0x00E7FE,0x0068AE,0x00F4D5,0x018B91,
-	};
-
-	constexpr Serialization::Variation SkyrimVariation[] = {
-		{ 0x02AC60, { 0x0F82FE } },
-	};
 	// clang-format on
 
 	Serialization::CompletionistData Data;
@@ -53,12 +43,13 @@ namespace CFramework_Jewelry {
 	//-- Framework Events ( On Item Added ) -------------
 	//---------------------------------------------------
 
-	EventResult CHandler::ProcessEvent(const RE::TESContainerChangedEvent* a_event, RE::BSTEventSource<RE::TESContainerChangedEvent>*) {
+	EventResult CHandler::ProcessEvent(const RE::TESActivateEvent* a_event, RE::BSTEventSource<RE::TESActivateEvent>*) {
 
-		if (!a_event || a_event->newContainer != 0x00014 || !Data.HasForm(a_event->baseObj)) { return EventResult::kContinue; }
+		if (!a_event || !a_event->objectActivated || !Data.HasForm(a_event->objectActivated->GetBaseObject()->GetFormID())) { return EventResult::kContinue; }
 
-		auto base = Data.GetBase(a_event->baseObj) ? Data.GetBase(a_event->baseObj) : a_event->baseObj;
-		CHandler::ProcessFoundForm(base, a_event->baseObj);
+		auto formID = a_event->objectActivated->GetBaseObject()->GetFormID();
+		auto base = Data.GetBase(formID) ? Data.GetBase(formID) : formID;
+		CHandler::ProcessFoundForm(base, formID);
 		return EventResult::kContinue;
 	}
 
@@ -68,15 +59,15 @@ namespace CFramework_Jewelry {
 
 	void CHandler::ProcessFoundForm(RE::FormID a_baseID, RE::FormID a_eventID) {
 
-		if (!FoundItemData.HasForm(a_eventID)) {
-			auto msg = fmt::format("Completionist: {:s} Acquired!"sv, Data.GetForm(a_eventID)->GetName());
-			CHandler::SendNotification(msg);
+		if (!FoundItemData_NoShow.HasForm(a_eventID)) {
+			auto msg = fmt::format("Completionist: Entry Complete - {:s}!"sv, Data.GetForm(a_eventID)->GetName());
+			FrameworkAPI::SendNotification(msg, "NotifySpecial");
 		}
 
-		FoundItemData.AddForm(a_baseID);
+		FoundItemData_NoShow.AddForm(a_baseID);
 		for (auto var : Data.GetAllVariations()) {
 			if (Data.GetBase(var) == a_baseID) {
-				FoundItemData.AddForm(var);
+				FoundItemData_NoShow.AddForm(var);
 			}
 		}
 
@@ -85,20 +76,7 @@ namespace CFramework_Jewelry {
 		BoolArray[b_pos] = true;
 
 		EntriesFound = std::ranges::count(BoolArray, true);
-		INFO("FOUND ITEMS LIST = {}", FoundItemData.data.size());
-	}
-
-	//---------------------------------------------------
-	//-- Framework Functions ( Send Notification ) ------
-	//---------------------------------------------------
-
-	void CHandler::SendNotification(std::string a_msg) {
-
-		if (!MCMScript->GetProperty("NotifyItems")->GetBool()) { return; }
-
-		auto message = fmt::format("<font color='{:s}'>{:s}</font>"sv, MCMScript->GetProperty("ColourString")->GetString(), a_msg);
-		if (!MCMScript->GetProperty("NotificationColourEnabled")->GetBool()) { RE::DebugNotification(a_msg.c_str()); return; }
-		RE::DebugNotification(message.c_str());
+		INFO("Found Items List Size - (No Show) = {}", FoundItemData_NoShow.data.size());
 	}
 
 	//---------------------------------------------------
@@ -110,12 +88,9 @@ namespace CFramework_Jewelry {
 		auto handler = RE::TESDataHandler::GetSingleton();
 		MCMScript = ScriptObject::FromForm(static_cast<RE::TESForm*>(handler->LookupForm(0x00800, "Completionist.esp")), "Completionist_MCMScript");
 
-		Data.CompileFormArray(CFramework_Jewelry::SkyrimForms, "Skyrim.esm");
-		Data.CompileFormArray(CFramework_Jewelry::DawnguardForms, "Dawnguard.esm");
-		Data.CompileVariation(CFramework_Jewelry::SkyrimVariation, "Skyrim.esm");
-		Data.MergeAsCollectable();
+		Data.CompileFormArray(CFramework_Doomstones::DoomStoneForms, "Skyrim.esm");
+		CFramework_Doomstones::Data.Populate(NameArray, FormArray, BoolArray, TextArray);
 
-		CFramework_Jewelry::Data.Populate(NameArray, FormArray, BoolArray, TextArray);
 		EntriesTotal = FormArray.size();
 		EntriesFound = std::ranges::count(BoolArray, true);
 	}
@@ -127,7 +102,7 @@ namespace CFramework_Jewelry {
 	void CHandler::UpdateFoundForms() {
 
 		for (auto i = 0; i < FormArray.size(); i++) {
-			if (FoundItemData.HasForm(FormArray[i]->GetFormID())) {
+			if (FoundItemData_NoShow.HasForm(FormArray[i]->GetFormID())) {
 				BoolArray[i] = true;
 			}
 		}
@@ -160,19 +135,19 @@ namespace CFramework_Jewelry {
 			if (BoolArray.at(b_pos)) {
 				BoolArray.at(b_pos) = false;
 
-				FoundItemData.RemoveForm(FormArray.at(b_pos)->GetFormID());
+				FoundItemData_NoShow.RemoveForm(FormArray.at(b_pos)->GetFormID());
 				for (auto var : Data.GetAllVariations()) {
 					if (Data.GetBase(var) == FormArray.at(b_pos)->GetFormID()) {
-						FoundItemData.RemoveForm(var);
+						FoundItemData_NoShow.RemoveForm(var);
 					}
 				}
 			}
 			else {
 				BoolArray.at(b_pos) = true;
-				FoundItemData.AddForm(FormArray.at(b_pos)->GetFormID());
+				FoundItemData_NoShow.AddForm(FormArray.at(b_pos)->GetFormID());
 				for (auto var : Data.GetAllVariations()) {
 					if (Data.GetBase(var) == FormArray.at(b_pos)->GetFormID()) {
-						FoundItemData.AddForm(var);
+						FoundItemData_NoShow.AddForm(var);
 					}
 				}
 			}

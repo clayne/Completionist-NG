@@ -4,6 +4,7 @@
 #include "Events.hpp"
 #include "Radiant Quest Handler/Radiant Quests Manager.hpp"
 #include "Internal Utility/InventoryMode.hpp"
+
 #include "Frameworks/FrameworkMaster.hpp"
 
 using namespace Completionist;
@@ -22,7 +23,9 @@ static void SKSEMessageHandler(SKSE::MessagingInterface::Message* message)
 		BookEvents::Install();
 		SKSE_Hooks::Install();
 		Quest_Manager::Install();
+
 		CFramework_Master::FrameworkAPI::Register();
+
 		Completionist_Inventory::FunctionHolder::Register();
 		Papyrus::Register();
 		break;
@@ -38,11 +41,9 @@ static void SKSEMessageHandler(SKSE::MessagingInterface::Message* message)
 		break;
 
 	case SKSE::MessagingInterface::kPostLoad:
-		CFramework_Master::FrameworkAPI::Framework_Load();
 		break;
 
 	case SKSE::MessagingInterface::kPostPostLoad:
-		CFramework_Master::FrameworkAPI::Framework_Load();
 		break;
 	}
 }

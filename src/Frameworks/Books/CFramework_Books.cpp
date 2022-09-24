@@ -18,6 +18,12 @@ namespace CFramework_BooksManager {
 		CFramework_Books_TY::BookHandler::InstallFramework();
 		CFramework_Books_SB::BookHandler::InstallFramework();
 		CFramework_Books_ST::BookHandler::InstallFramework();
+		
+		CFramework_Books_DG::BookHandler::InstallFramework();
+		CFramework_Books_DGS::BookHandler::InstallFramework();
+
+		CFramework_Books_DB::BookHandler::InstallFramework();
+		CFramework_Books_DBS::BookHandler::InstallFramework();
 	}
 
 	void CHandler::UpdateFoundForms() {
@@ -29,6 +35,12 @@ namespace CFramework_BooksManager {
 		CFramework_Books_TY::BookHandler::UpdateFoundForms();
 		CFramework_Books_SB::BookHandler::UpdateFoundForms();
 		CFramework_Books_ST::BookHandler::UpdateFoundForms();
+
+		CFramework_Books_DG::BookHandler::UpdateFoundForms();
+		CFramework_Books_DGS::BookHandler::UpdateFoundForms();
+
+		CFramework_Books_DB::BookHandler::UpdateFoundForms();
+		CFramework_Books_DBS::BookHandler::UpdateFoundForms();
 	}
 }
 
@@ -189,19 +201,15 @@ namespace CFramework_Books_AG {
 		Data.CompileFormArray(CFramework_Books_AG::SkyrimForms, "Skyrim.esm");
 		Data.MergeAsCollectable();
 
-		CFramework_Books_AG::Data.Populate(NameArray, FormArray, BoolArray);
-
+		CFramework_Books_AG::Data.Populate(NameArray, FormArray, BoolArray, TextArray);
 		for (auto i = 0; i < FormArray.size(); i++) {
 			if (FormArray[i]) {
 				auto* book = static_cast<RE::TESObjectBOOK*>(FormArray[i]);
 				if (book->GetSpell()) {
-					TextArray.push_back("$AddSpellTomeHighlight{" + NameArray[i] + "}{" + book->GetSpell()->GetName() + "}");
+					TextArray[i] = "$AddSpellTomeHighlight{" + NameArray[i] + "}{" + book->GetSpell()->GetName() + "}";
 				}
 				else if (book->TeachesSkill()) {
-					TextArray.push_back("$AddSkillBookHighlight{" + NameArray[i] + "}{" + CFramework_Master::FrameworkAPI::GetBookSkill(book->GetSkill()) + "}");
-				}
-				else {
-					TextArray.push_back("NO_HIGHLIGHT");
+					TextArray[i] = "$AddSkillBookHighlight{" + NameArray[i] + "}{" + CFramework_Master::FrameworkAPI::GetBookSkill(book->GetSkill()) + "}";
 				}
 			}
 		}
@@ -232,12 +240,12 @@ namespace CFramework_Books_AG {
 	//-- Framework Functions ( MCM is Entry Complete ) --
 	//---------------------------------------------------
 
-	bool BookHandler::IsOptionCompleted(std::string a_name) {
+	uint32_t BookHandler::IsOptionCompleted(std::string a_name) {
 
 		if (auto t_pos = std::find(NameArray.begin(), NameArray.end(), a_name); t_pos != NameArray.end()) {
-			return BoolArray[std::distance(NameArray.begin(), t_pos)];
+			return uint32_t(BoolArray[std::distance(NameArray.begin(), t_pos)]);
 		}
-		return false;
+		return -1;
 	}
 
 	//---------------------------------------------------
@@ -433,19 +441,15 @@ namespace CFramework_Books_HS {
 		Data.CompileFormArray(CFramework_Books_HS::SkyrimForms, "Skyrim.esm");
 		Data.MergeAsCollectable();
 
-		CFramework_Books_HS::Data.Populate(NameArray, FormArray, BoolArray);
-
+		CFramework_Books_HS::Data.Populate(NameArray, FormArray, BoolArray, TextArray);
 		for (auto i = 0; i < FormArray.size(); i++) {
 			if (FormArray[i]) {
 				auto* book = static_cast<RE::TESObjectBOOK*>(FormArray[i]);
 				if (book->GetSpell()) {
-					TextArray.push_back("$AddSpellTomeHighlight{" + NameArray[i] + "}{" + book->GetSpell()->GetName() + "}");
+					TextArray[i] = "$AddSpellTomeHighlight{" + NameArray[i] + "}{" + book->GetSpell()->GetName() + "}";
 				}
 				else if (book->TeachesSkill()) {
-					TextArray.push_back("$AddSkillBookHighlight{" + NameArray[i] + "}{" + CFramework_Master::FrameworkAPI::GetBookSkill(book->GetSkill()) + "}");
-				}
-				else {
-					TextArray.push_back("NO_HIGHLIGHT");
+					TextArray[i] = "$AddSkillBookHighlight{" + NameArray[i] + "}{" + CFramework_Master::FrameworkAPI::GetBookSkill(book->GetSkill()) + "}";
 				}
 			}
 		}
@@ -476,12 +480,12 @@ namespace CFramework_Books_HS {
 	//-- Framework Functions ( MCM is Entry Complete ) --
 	//---------------------------------------------------
 
-	bool BookHandler::IsOptionCompleted(std::string a_name) {
+	uint32_t BookHandler::IsOptionCompleted(std::string a_name) {
 
 		if (auto t_pos = std::find(NameArray.begin(), NameArray.end(), a_name); t_pos != NameArray.end()) {
-			return BoolArray[std::distance(NameArray.begin(), t_pos)];
+			return uint32_t(BoolArray[std::distance(NameArray.begin(), t_pos)]);
 		}
-		return false;
+		return -1;
 	}
 
 	//---------------------------------------------------
@@ -679,19 +683,15 @@ namespace CFramework_Books_TY {
 		Data.CompileFormArray(CFramework_Books_TY::SkyrimForms, "Skyrim.esm");
 		Data.MergeAsCollectable();
 
-		CFramework_Books_TY::Data.Populate(NameArray, FormArray, BoolArray);
-
+		CFramework_Books_TY::Data.Populate(NameArray, FormArray, BoolArray, TextArray);
 		for (auto i = 0; i < FormArray.size(); i++) {
 			if (FormArray[i]) {
 				auto* book = static_cast<RE::TESObjectBOOK*>(FormArray[i]);
 				if (book->GetSpell()) {
-					TextArray.push_back("$AddSpellTomeHighlight{" + NameArray[i] + "}{" + book->GetSpell()->GetName() + "}");
+					TextArray[i] = "$AddSpellTomeHighlight{" + NameArray[i] + "}{" + book->GetSpell()->GetName() + "}";
 				}
 				else if (book->TeachesSkill()) {
-					TextArray.push_back("$AddSkillBookHighlight{" + NameArray[i] + "}{" + CFramework_Master::FrameworkAPI::GetBookSkill(book->GetSkill()) + "}");
-				}
-				else {
-					TextArray.push_back("NO_HIGHLIGHT");
+					TextArray[i] = "$AddSkillBookHighlight{" + NameArray[i] + "}{" + CFramework_Master::FrameworkAPI::GetBookSkill(book->GetSkill()) + "}";
 				}
 			}
 		}
@@ -722,12 +722,12 @@ namespace CFramework_Books_TY {
 	//-- Framework Functions ( MCM is Entry Complete ) --
 	//---------------------------------------------------
 
-	bool BookHandler::IsOptionCompleted(std::string a_name) {
+	uint32_t BookHandler::IsOptionCompleted(std::string a_name) {
 
 		if (auto t_pos = std::find(NameArray.begin(), NameArray.end(), a_name); t_pos != NameArray.end()) {
-			return BoolArray[std::distance(NameArray.begin(), t_pos)];
+			return uint32_t(BoolArray[std::distance(NameArray.begin(), t_pos)]);
 		}
-		return false;
+		return -1;
 	}
 
 	//---------------------------------------------------
@@ -923,19 +923,15 @@ namespace CFramework_Books_SB {
 		Data.CompileFormArray(CFramework_Books_SB::SkyrimForms, "Skyrim.esm");
 		Data.MergeAsCollectable();
 
-		CFramework_Books_SB::Data.Populate(NameArray, FormArray, BoolArray);
-
+		CFramework_Books_SB::Data.Populate(NameArray, FormArray, BoolArray, TextArray);
 		for (auto i = 0; i < FormArray.size(); i++) {
 			if (FormArray[i]) {
 				auto* book = static_cast<RE::TESObjectBOOK*>(FormArray[i]);
 				if (book->GetSpell()) {
-					TextArray.push_back("$AddSpellTomeHighlight{" + NameArray[i] + "}{" + book->GetSpell()->GetName() + "}");
+					TextArray[i] = "$AddSpellTomeHighlight{" + NameArray[i] + "}{" + book->GetSpell()->GetName() + "}";
 				}
 				else if (book->TeachesSkill()) {
-					TextArray.push_back("$AddSkillBookHighlight{" + NameArray[i] + "}{" + CFramework_Master::FrameworkAPI::GetBookSkill(book->GetSkill()) + "}");
-				}
-				else {
-					TextArray.push_back("NO_HIGHLIGHT");
+					TextArray[i] = "$AddSkillBookHighlight{" + NameArray[i] + "}{" + CFramework_Master::FrameworkAPI::GetBookSkill(book->GetSkill()) + "}";
 				}
 			}
 		}
@@ -966,12 +962,12 @@ namespace CFramework_Books_SB {
 	//-- Framework Functions ( MCM is Entry Complete ) --
 	//---------------------------------------------------
 
-	bool BookHandler::IsOptionCompleted(std::string a_name) {
+	uint32_t BookHandler::IsOptionCompleted(std::string a_name) {
 
 		if (auto t_pos = std::find(NameArray.begin(), NameArray.end(), a_name); t_pos != NameArray.end()) {
-			return BoolArray[std::distance(NameArray.begin(), t_pos)];
+			return uint32_t(BoolArray[std::distance(NameArray.begin(), t_pos)]);
 		}
-		return false;
+		return -1;
 	}
 
 	//---------------------------------------------------
@@ -1171,19 +1167,15 @@ namespace CFramework_Books_ST {
 
 		Data.MergeAsCollectable();
 
-		CFramework_Books_ST::Data.Populate(NameArray, FormArray, BoolArray);
+		CFramework_Books_ST::Data.Populate(NameArray, FormArray, BoolArray, TextArray);
 		for (auto i = 0; i < FormArray.size(); i++) {
 			if (FormArray[i]) {
 				auto* book = static_cast<RE::TESObjectBOOK*>(FormArray[i]);
-				
 				if (book->GetSpell()) {
-					TextArray.push_back("$AddSpellTomeHighlight{" + NameArray[i] + "}{" + book->GetSpell()->GetName() + "}");
+					TextArray[i] = "$AddSpellTomeHighlight{" + NameArray[i] + "}{" + book->GetSpell()->GetName() + "}";
 				}
 				else if (book->TeachesSkill()) {
-					TextArray.push_back("$AddSkillBookHighlight{" + NameArray[i] + "}{" + CFramework_Master::FrameworkAPI::GetBookSkill(book->GetSkill()) + "}");
-				}
-				else {
-					TextArray.push_back("NO_HIGHLIGHT");
+					TextArray[i] = "$AddSkillBookHighlight{" + NameArray[i] + "}{" + CFramework_Master::FrameworkAPI::GetBookSkill(book->GetSkill()) + "}";
 				}
 			}
 		}
@@ -1215,12 +1207,954 @@ namespace CFramework_Books_ST {
 	//-- Framework Functions ( MCM is Entry Complete ) --
 	//---------------------------------------------------
 
-	bool BookHandler::IsOptionCompleted(std::string a_name) {
+	uint32_t BookHandler::IsOptionCompleted(std::string a_name) {
 
 		if (auto t_pos = std::find(NameArray.begin(), NameArray.end(), a_name); t_pos != NameArray.end()) {
-			return BoolArray[std::distance(NameArray.begin(), t_pos)];
+			return uint32_t(BoolArray[std::distance(NameArray.begin(), t_pos)]);
 		}
-		return false;
+		return -1;
+	}
+
+	//---------------------------------------------------
+	//-- Framework Functions ( MCM Set Entry Complete ) -
+	//---------------------------------------------------
+
+	void BookHandler::SetOptionCompleted(std::string a_name) {
+
+		if (auto t_pos = std::find(NameArray.begin(), NameArray.end(), a_name); t_pos != NameArray.end()) {
+			auto b_pos = std::distance(NameArray.begin(), t_pos);
+
+			if (BoolArray.at(b_pos)) {
+				BoolArray.at(b_pos) = false;
+
+				FoundItemData.RemoveForm(FormArray.at(b_pos)->GetFormID());
+				for (auto var : Data.GetAllVariations()) {
+					if (Data.GetBase(var) == FormArray.at(b_pos)->GetFormID()) {
+						FoundItemData.RemoveForm(var);
+					}
+				}
+			}
+			else {
+				BoolArray.at(b_pos) = true;
+				FoundItemData.AddForm(FormArray.at(b_pos)->GetFormID());
+				for (auto var : Data.GetAllVariations()) {
+					if (Data.GetBase(var) == FormArray.at(b_pos)->GetFormID()) {
+						FoundItemData.AddForm(var);
+					}
+				}
+			}
+
+			EntriesTotal = FormArray.size();
+			EntriesFound = std::ranges::count(BoolArray, true);
+		}
+	}
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------------ Dawnguard Books
+//------------------------------------------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------------
+
+namespace CFramework_Books_DG {
+
+	using namespace CFramework_Master;
+
+	// clang-format off
+
+	constexpr Serialization::FormArray BookForms = {
+	0x016692,0x01A3E7,0x014010,0x014011,0x014012,0x014013,0x014014,0x014015,
+	0x014016,0x014017,0x014018,0x014019,0x01A3E6,0x00D070,0x003F79,0x004D5B,
+	0x01A3E5,0x00FAC2,0x006925,0x01A3E8,0x01A3E0,0x01A3E1,0x01A3E2,0x01A3E3,
+	};
+
+	// clang-format on
+
+	Serialization::CompletionistData Data;
+
+	std::vector<std::string> NameArray{};
+	std::vector<std::string> TextArray{};
+	std::vector<RE::TESForm*> FormArray{};
+	std::vector<bool> BoolArray{};
+
+	inline ScriptObjectPtr  MCMScript;
+
+	inline uint32_t EntriesTotal;
+	inline uint32_t EntriesFound;
+
+	RE::Actor* Player;
+
+	//---------------------------------------------------
+	//-- Framework Functions ( Install Framework ) ------
+	//---------------------------------------------------
+
+	void BookHandler::InstallFramework() {
+
+		BookHandler::Sink();
+		MenuHandler::Sink();
+
+		BookHandler::InjectAndCompileData();
+	}
+
+	//---------------------------------------------------
+	//-- Framework Functions ( Get Singleton ) ----------
+	//---------------------------------------------------
+
+	auto BookHandler::GetSingleton() -> BookHandler* {
+		static BookHandler singleton;
+		return std::addressof(singleton);
+	}
+
+	auto MenuHandler::GetSingleton() -> MenuHandler* {
+		static MenuHandler singleton;
+		return std::addressof(singleton);
+	}
+
+	//---------------------------------------------------
+	//-- Framework Functions ( Sink Event ) -------------
+	//---------------------------------------------------
+
+	void BookHandler::Sink() {
+		RE::BooksRead::GetEventSource()->AddEventSink(BookHandler::GetSingleton());
+	}
+
+	void MenuHandler::Sink() {
+		auto UserInterface = RE::UI::GetSingleton();
+		UserInterface->AddEventSink(static_cast<RE::BSTEventSink<RE::MenuOpenCloseEvent>*>(MenuHandler::GetSingleton()));
+	}
+
+	//---------------------------------------------------
+	//-- Framework Events ( On Item Added ) -------------
+	//---------------------------------------------------
+
+	auto BookHandler::ProcessEvent(RE::BooksRead::Event const* a_event, [[maybe_unused]] RE::BSTEventSource<RE::BooksRead::Event>* a_eventSource) -> RE::BSEventNotifyControl {
+
+		if (a_event == nullptr || !Data.HasForm(a_event->book->GetFormID())) { return RE::BSEventNotifyControl::kContinue; }
+
+		auto base = Data.GetBase(a_event->book->GetFormID()) ? Data.GetBase(a_event->book->GetFormID()) : a_event->book->GetFormID();
+		BookHandler::ProcessFoundForm(base, a_event->book->GetFormID(), false);
+		return EventResult::kContinue;
+	}
+
+	auto MenuHandler::ProcessEvent(RE::MenuOpenCloseEvent const* a_event, [[maybe_unused]] RE::BSTEventSource<RE::MenuOpenCloseEvent>* a_eventSource) -> RE::BSEventNotifyControl {
+
+		if (!a_event) { return RE::BSEventNotifyControl::kContinue; }
+
+		if (a_event->menuName == RE::BookMenu::MENU_NAME && a_event->opening && Data.HasForm(RE::BookMenu::GetTargetForm()->GetFormID())) {
+			if (auto target = RE::BookMenu::GetTargetForm()->GetFormID(); target) {
+				auto base = Data.GetBase(target) ? Data.GetBase(target) : target;
+				BookHandler::ProcessFoundForm(base, target, false);
+				return EventResult::kContinue;
+			}
+			return EventResult::kContinue;
+		}
+		return EventResult::kContinue;
+	}
+
+	//---------------------------------------------------
+	//-- Framework Functions ( Process Map Marker ) -----
+	//---------------------------------------------------
+
+	void BookHandler::ProcessFoundForm(RE::FormID a_baseID, RE::FormID a_eventID, bool a_supress) {
+
+		if (!FoundItemData.HasForm(a_eventID) && !a_supress) {
+			auto msg = fmt::format("Completionist: Entry Complete - {:s}!"sv, Data.GetForm(a_eventID)->GetName());
+			BookHandler::SendNotification(msg);
+		}
+
+		FoundItemData.AddForm(a_baseID);
+		for (auto var : Data.GetAllVariations()) {
+			if (Data.GetBase(var) == a_baseID) {
+				FoundItemData.AddForm(var);
+			}
+		}
+
+		auto t_pos = std::find(FormArray.begin(), FormArray.end(), Data.GetForm(a_baseID));
+		auto b_pos = std::distance(FormArray.begin(), t_pos);
+		BoolArray.at(b_pos) = true;
+
+		EntriesFound = std::ranges::count(BoolArray, true);
+		INFO("FOUND ITEMS LIST = {}", FoundItemData.data.size());
+	}
+
+	//---------------------------------------------------
+	//-- Framework Functions ( Send Notification ) ------
+	//---------------------------------------------------
+
+	void BookHandler::SendNotification(std::string a_msg) {
+
+		if (!MCMScript->GetProperty("NotifyItems")->GetBool()) { return; }
+
+		auto message = fmt::format("<font color='{:s}'>{:s}</font>"sv, MCMScript->GetProperty("ColourString")->GetString(), a_msg);
+		if (!MCMScript->GetProperty("NotificationColourEnabled")->GetBool()) { RE::DebugNotification(a_msg.c_str()); return; }
+		RE::DebugNotification(message.c_str());
+	}
+
+	//---------------------------------------------------
+	//-- Framework Functions ( Form Injection ) ---------
+	//---------------------------------------------------
+
+	void BookHandler::InjectAndCompileData() {
+
+		auto handler = RE::TESDataHandler::GetSingleton();
+		MCMScript = ScriptObject::FromForm(static_cast<RE::TESForm*>(handler->LookupForm(0x00800, "Completionist.esp")), "Completionist_MCMScript");
+
+		Data.CompileFormArray(CFramework_Books_DG::BookForms, "Dawnguard.esm");
+		Data.MergeAsCollectable();
+
+		CFramework_Books_DG::Data.Populate(NameArray, FormArray, BoolArray, TextArray);
+		for (auto i = 0; i < FormArray.size(); i++) {
+			if (FormArray[i]) {
+				auto* book = static_cast<RE::TESObjectBOOK*>(FormArray[i]);
+				if (book->GetSpell()) {
+					TextArray[i] = "$AddSpellTomeHighlight{" + NameArray[i] + "}{" + book->GetSpell()->GetName() + "}";
+				}
+				else if (book->TeachesSkill()) {
+					TextArray[i] = "$AddSkillBookHighlight{" + NameArray[i] + "}{" + CFramework_Master::FrameworkAPI::GetBookSkill(book->GetSkill()) + "}";
+				}
+			}
+		}
+		EntriesTotal = FormArray.size();
+		EntriesFound = std::ranges::count(BoolArray, true);
+	}
+
+	//---------------------------------------------------
+	//-- Framework Functions ( Update Found Forms ) -----
+	//---------------------------------------------------
+
+	void BookHandler::UpdateFoundForms() {
+
+		for (auto i = 0; i < FormArray.size(); i++) {
+
+			if (auto* book = static_cast<RE::TESObjectBOOK*>(FormArray[i]); book) {
+				if (book->IsRead() || (book->GetSpell() && CFramework_BooksManager::Player->HasSpell(book->GetSpell())) || FoundItemData.HasForm(book->GetFormID())) {
+					auto base = Data.GetBase(book->GetFormID()) ? Data.GetBase(book->GetFormID()) : book->GetFormID();
+					BookHandler::ProcessFoundForm(base, FormArray[i]->GetFormID(), true);
+				}
+			}
+		}
+
+		EntriesTotal = FormArray.size();
+		EntriesFound = std::ranges::count(BoolArray, true);
+	}
+
+	//---------------------------------------------------
+	//-- Framework Functions ( MCM is Entry Complete ) --
+	//---------------------------------------------------
+
+	uint32_t BookHandler::IsOptionCompleted(std::string a_name) {
+
+		if (auto t_pos = std::find(NameArray.begin(), NameArray.end(), a_name); t_pos != NameArray.end()) {
+			return uint32_t(BoolArray[std::distance(NameArray.begin(), t_pos)]);
+		}
+		return -1;
+	}
+
+	//---------------------------------------------------
+	//-- Framework Functions ( MCM Set Entry Complete ) -
+	//---------------------------------------------------
+
+	void BookHandler::SetOptionCompleted(std::string a_name) {
+
+		if (auto t_pos = std::find(NameArray.begin(), NameArray.end(), a_name); t_pos != NameArray.end()) {
+			auto b_pos = std::distance(NameArray.begin(), t_pos);
+
+			if (BoolArray.at(b_pos)) {
+				BoolArray.at(b_pos) = false;
+
+				FoundItemData.RemoveForm(FormArray.at(b_pos)->GetFormID());
+				for (auto var : Data.GetAllVariations()) {
+					if (Data.GetBase(var) == FormArray.at(b_pos)->GetFormID()) {
+						FoundItemData.RemoveForm(var);
+					}
+				}
+			}
+			else {
+				BoolArray.at(b_pos) = true;
+				FoundItemData.AddForm(FormArray.at(b_pos)->GetFormID());
+				for (auto var : Data.GetAllVariations()) {
+					if (Data.GetBase(var) == FormArray.at(b_pos)->GetFormID()) {
+						FoundItemData.AddForm(var);
+					}
+				}
+			}
+
+			EntriesTotal = FormArray.size();
+			EntriesFound = std::ranges::count(BoolArray, true);
+		}
+	}
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------------ Dawnguard Spell Tomes
+//------------------------------------------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------------
+
+namespace CFramework_Books_DGS {
+
+	using namespace CFramework_Master;
+
+	// clang-format off
+
+	constexpr Serialization::FormArray BookForms = {
+	0x0045B0,0x0045B1,0x0045B2,0x00E8D6,0x00E8D5,0x003F4E,0x003F51,0x003F4D,
+	};
+
+	// clang-format on
+
+	Serialization::CompletionistData Data;
+
+	std::vector<std::string> NameArray{};
+	std::vector<std::string> TextArray{};
+	std::vector<RE::TESForm*> FormArray{};
+	std::vector<bool> BoolArray{};
+
+	inline ScriptObjectPtr  MCMScript;
+
+	inline uint32_t EntriesTotal;
+	inline uint32_t EntriesFound;
+
+	RE::Actor* Player;
+
+	//---------------------------------------------------
+	//-- Framework Functions ( Install Framework ) ------
+	//---------------------------------------------------
+
+	void BookHandler::InstallFramework() {
+
+		BookHandler::Sink();
+		MenuHandler::Sink();
+
+		BookHandler::InjectAndCompileData();
+	}
+
+	//---------------------------------------------------
+	//-- Framework Functions ( Get Singleton ) ----------
+	//---------------------------------------------------
+
+	auto BookHandler::GetSingleton() -> BookHandler* {
+		static BookHandler singleton;
+		return std::addressof(singleton);
+	}
+
+	auto MenuHandler::GetSingleton() -> MenuHandler* {
+		static MenuHandler singleton;
+		return std::addressof(singleton);
+	}
+
+	//---------------------------------------------------
+	//-- Framework Functions ( Sink Event ) -------------
+	//---------------------------------------------------
+
+	void BookHandler::Sink() {
+		RE::BooksRead::GetEventSource()->AddEventSink(BookHandler::GetSingleton());
+	}
+
+	void MenuHandler::Sink() {
+		auto UserInterface = RE::UI::GetSingleton();
+		UserInterface->AddEventSink(static_cast<RE::BSTEventSink<RE::MenuOpenCloseEvent>*>(MenuHandler::GetSingleton()));
+	}
+
+	//---------------------------------------------------
+	//-- Framework Events ( On Item Added ) -------------
+	//---------------------------------------------------
+
+	auto BookHandler::ProcessEvent(RE::BooksRead::Event const* a_event, [[maybe_unused]] RE::BSTEventSource<RE::BooksRead::Event>* a_eventSource) -> RE::BSEventNotifyControl {
+
+		if (a_event == nullptr || !Data.HasForm(a_event->book->GetFormID())) { return RE::BSEventNotifyControl::kContinue; }
+
+		auto base = Data.GetBase(a_event->book->GetFormID()) ? Data.GetBase(a_event->book->GetFormID()) : a_event->book->GetFormID();
+		BookHandler::ProcessFoundForm(base, a_event->book->GetFormID(), false);
+		return EventResult::kContinue;
+	}
+
+	auto MenuHandler::ProcessEvent(RE::MenuOpenCloseEvent const* a_event, [[maybe_unused]] RE::BSTEventSource<RE::MenuOpenCloseEvent>* a_eventSource) -> RE::BSEventNotifyControl {
+
+		if (!a_event) { return RE::BSEventNotifyControl::kContinue; }
+
+		if (a_event->menuName == RE::BookMenu::MENU_NAME && a_event->opening && Data.HasForm(RE::BookMenu::GetTargetForm()->GetFormID())) {
+			if (auto target = RE::BookMenu::GetTargetForm()->GetFormID(); target) {
+				auto base = Data.GetBase(target) ? Data.GetBase(target) : target;
+				BookHandler::ProcessFoundForm(base, target, false);
+				return EventResult::kContinue;
+			}
+			return EventResult::kContinue;
+		}
+		return EventResult::kContinue;
+	}
+
+	//---------------------------------------------------
+	//-- Framework Functions ( Process Map Marker ) -----
+	//---------------------------------------------------
+
+	void BookHandler::ProcessFoundForm(RE::FormID a_baseID, RE::FormID a_eventID, bool a_supress) {
+
+		if (!FoundItemData.HasForm(a_eventID) && !a_supress) {
+			auto msg = fmt::format("Completionist: Entry Complete - {:s}!"sv, Data.GetForm(a_eventID)->GetName());
+			BookHandler::SendNotification(msg);
+		}
+
+		FoundItemData.AddForm(a_baseID);
+		for (auto var : Data.GetAllVariations()) {
+			if (Data.GetBase(var) == a_baseID) {
+				FoundItemData.AddForm(var);
+			}
+		}
+
+		auto t_pos = std::find(FormArray.begin(), FormArray.end(), Data.GetForm(a_baseID));
+		auto b_pos = std::distance(FormArray.begin(), t_pos);
+		BoolArray.at(b_pos) = true;
+
+		EntriesFound = std::ranges::count(BoolArray, true);
+		INFO("FOUND ITEMS LIST = {}", FoundItemData.data.size());
+	}
+
+	//---------------------------------------------------
+	//-- Framework Functions ( Send Notification ) ------
+	//---------------------------------------------------
+
+	void BookHandler::SendNotification(std::string a_msg) {
+
+		if (!MCMScript->GetProperty("NotifyItems")->GetBool()) { return; }
+
+		auto message = fmt::format("<font color='{:s}'>{:s}</font>"sv, MCMScript->GetProperty("ColourString")->GetString(), a_msg);
+		if (!MCMScript->GetProperty("NotificationColourEnabled")->GetBool()) { RE::DebugNotification(a_msg.c_str()); return; }
+		RE::DebugNotification(message.c_str());
+	}
+
+	//---------------------------------------------------
+	//-- Framework Functions ( Form Injection ) ---------
+	//---------------------------------------------------
+
+	void BookHandler::InjectAndCompileData() {
+
+		auto handler = RE::TESDataHandler::GetSingleton();
+		MCMScript = ScriptObject::FromForm(static_cast<RE::TESForm*>(handler->LookupForm(0x00800, "Completionist.esp")), "Completionist_MCMScript");
+
+		Data.CompileFormArray(CFramework_Books_DGS::BookForms, "Dawnguard.esm");
+
+		Data.MergeAsCollectable();
+
+		CFramework_Books_DGS::Data.Populate(NameArray, FormArray, BoolArray, TextArray);
+		for (auto i = 0; i < FormArray.size(); i++) {
+			if (FormArray[i]) {
+				auto* book = static_cast<RE::TESObjectBOOK*>(FormArray[i]);
+				if (book->GetSpell()) {
+					TextArray[i] = "$AddSpellTomeHighlight{" + NameArray[i] + "}{" + book->GetSpell()->GetName() + "}";
+				}
+				else if (book->TeachesSkill()) {
+					TextArray[i] = "$AddSkillBookHighlight{" + NameArray[i] + "}{" + CFramework_Master::FrameworkAPI::GetBookSkill(book->GetSkill()) + "}";
+				}
+			}
+		}
+		EntriesTotal = FormArray.size();
+		EntriesFound = std::ranges::count(BoolArray, true);
+	}
+
+	//---------------------------------------------------
+	//-- Framework Functions ( Update Found Forms ) -----
+	//---------------------------------------------------
+
+	void BookHandler::UpdateFoundForms() {
+
+		for (auto i = 0; i < FormArray.size(); i++) {
+
+			if (auto* book = static_cast<RE::TESObjectBOOK*>(FormArray[i]); book) {
+				if (book->IsRead() || (book->GetSpell() && CFramework_BooksManager::Player->HasSpell(book->GetSpell())) || FoundItemData.HasForm(book->GetFormID())) {
+					auto base = Data.GetBase(book->GetFormID()) ? Data.GetBase(book->GetFormID()) : book->GetFormID();
+					BookHandler::ProcessFoundForm(base, FormArray[i]->GetFormID(), true);
+				}
+			}
+		}
+
+		EntriesTotal = FormArray.size();
+		EntriesFound = std::ranges::count(BoolArray, true);
+	}
+
+	//---------------------------------------------------
+	//-- Framework Functions ( MCM is Entry Complete ) --
+	//---------------------------------------------------
+
+	uint32_t BookHandler::IsOptionCompleted(std::string a_name) {
+
+		if (auto t_pos = std::find(NameArray.begin(), NameArray.end(), a_name); t_pos != NameArray.end()) {
+			return uint32_t(BoolArray[std::distance(NameArray.begin(), t_pos)]);
+		}
+		return -1;
+	}
+
+	//---------------------------------------------------
+	//-- Framework Functions ( MCM Set Entry Complete ) -
+	//---------------------------------------------------
+
+	void BookHandler::SetOptionCompleted(std::string a_name) {
+
+		if (auto t_pos = std::find(NameArray.begin(), NameArray.end(), a_name); t_pos != NameArray.end()) {
+			auto b_pos = std::distance(NameArray.begin(), t_pos);
+
+			if (BoolArray.at(b_pos)) {
+				BoolArray.at(b_pos) = false;
+
+				FoundItemData.RemoveForm(FormArray.at(b_pos)->GetFormID());
+				for (auto var : Data.GetAllVariations()) {
+					if (Data.GetBase(var) == FormArray.at(b_pos)->GetFormID()) {
+						FoundItemData.RemoveForm(var);
+					}
+				}
+			}
+			else {
+				BoolArray.at(b_pos) = true;
+				FoundItemData.AddForm(FormArray.at(b_pos)->GetFormID());
+				for (auto var : Data.GetAllVariations()) {
+					if (Data.GetBase(var) == FormArray.at(b_pos)->GetFormID()) {
+						FoundItemData.AddForm(var);
+					}
+				}
+			}
+
+			EntriesTotal = FormArray.size();
+			EntriesFound = std::ranges::count(BoolArray, true);
+		}
+	}
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------------ Dragonborn Books
+//------------------------------------------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------------
+
+namespace CFramework_Books_DB {
+
+	using namespace CFramework_Master;
+
+	// clang-format off
+
+	constexpr Serialization::FormArray BookForms = {
+	0x033BD8,0x016E2C,0x01E99E,0x01E99F,0x01E99D,0x01E99C,0x016E2D,0x016E22,
+	0x028261,0x028262,0x028263,0x03ABCC,0x028264,0x03661A,0x03AF1B,0x03AF1C,
+	0x03AF1D,0x028269,0x02BAC7,0x02826A,0x02826B,0x03A35F,0x03A360,0x03A361,
+	0x03A362,0x02826C,0x02826D,0x028265,0x028267,0x03ABCD,0x028268,0x02826E,
+	0x02826F,0x028270,0x028271,0x028272,0x028273,0x028274,0x03B052,0x03B063,
+	0x03B064,0x028275,0x03B3A5,0x029102,0x028276,0x028266,0x01D8D0,0x028277,
+	};
+
+	// clang-format on
+
+	Serialization::CompletionistData Data;
+
+	std::vector<std::string> NameArray{};
+	std::vector<std::string> TextArray{};
+	std::vector<RE::TESForm*> FormArray{};
+	std::vector<bool> BoolArray{};
+
+	inline ScriptObjectPtr  MCMScript;
+
+	inline uint32_t EntriesTotal;
+	inline uint32_t EntriesFound;
+
+	RE::Actor* Player;
+
+	//---------------------------------------------------
+	//-- Framework Functions ( Install Framework ) ------
+	//---------------------------------------------------
+
+	void BookHandler::InstallFramework() {
+
+		BookHandler::Sink();
+		MenuHandler::Sink();
+
+		BookHandler::InjectAndCompileData();
+	}
+
+	//---------------------------------------------------
+	//-- Framework Functions ( Get Singleton ) ----------
+	//---------------------------------------------------
+
+	auto BookHandler::GetSingleton() -> BookHandler* {
+		static BookHandler singleton;
+		return std::addressof(singleton);
+	}
+
+	auto MenuHandler::GetSingleton() -> MenuHandler* {
+		static MenuHandler singleton;
+		return std::addressof(singleton);
+	}
+
+	//---------------------------------------------------
+	//-- Framework Functions ( Sink Event ) -------------
+	//---------------------------------------------------
+
+	void BookHandler::Sink() {
+		RE::BooksRead::GetEventSource()->AddEventSink(BookHandler::GetSingleton());
+	}
+
+	void MenuHandler::Sink() {
+		auto UserInterface = RE::UI::GetSingleton();
+		UserInterface->AddEventSink(static_cast<RE::BSTEventSink<RE::MenuOpenCloseEvent>*>(MenuHandler::GetSingleton()));
+	}
+
+	//---------------------------------------------------
+	//-- Framework Events ( On Item Added ) -------------
+	//---------------------------------------------------
+
+	auto BookHandler::ProcessEvent(RE::BooksRead::Event const* a_event, [[maybe_unused]] RE::BSTEventSource<RE::BooksRead::Event>* a_eventSource) -> RE::BSEventNotifyControl {
+
+		if (a_event == nullptr || !Data.HasForm(a_event->book->GetFormID())) { return RE::BSEventNotifyControl::kContinue; }
+
+		auto base = Data.GetBase(a_event->book->GetFormID()) ? Data.GetBase(a_event->book->GetFormID()) : a_event->book->GetFormID();
+		BookHandler::ProcessFoundForm(base, a_event->book->GetFormID(), false);
+		return EventResult::kContinue;
+	}
+
+	auto MenuHandler::ProcessEvent(RE::MenuOpenCloseEvent const* a_event, [[maybe_unused]] RE::BSTEventSource<RE::MenuOpenCloseEvent>* a_eventSource) -> RE::BSEventNotifyControl {
+
+		if (!a_event) { return RE::BSEventNotifyControl::kContinue; }
+
+		if (a_event->menuName == RE::BookMenu::MENU_NAME && a_event->opening && Data.HasForm(RE::BookMenu::GetTargetForm()->GetFormID())) {
+			if (auto target = RE::BookMenu::GetTargetForm()->GetFormID(); target) {
+				auto base = Data.GetBase(target) ? Data.GetBase(target) : target;
+				BookHandler::ProcessFoundForm(base, target, false);
+				return EventResult::kContinue;
+			}
+			return EventResult::kContinue;
+		}
+		return EventResult::kContinue;
+	}
+
+	//---------------------------------------------------
+	//-- Framework Functions ( Process Map Marker ) -----
+	//---------------------------------------------------
+
+	void BookHandler::ProcessFoundForm(RE::FormID a_baseID, RE::FormID a_eventID, bool a_supress) {
+
+		if (!FoundItemData.HasForm(a_eventID) && !a_supress) {
+			auto msg = fmt::format("Completionist: Entry Complete - {:s}!"sv, Data.GetForm(a_eventID)->GetName());
+			BookHandler::SendNotification(msg);
+		}
+
+		FoundItemData.AddForm(a_baseID);
+		for (auto var : Data.GetAllVariations()) {
+			if (Data.GetBase(var) == a_baseID) {
+				FoundItemData.AddForm(var);
+			}
+		}
+
+		auto t_pos = std::find(FormArray.begin(), FormArray.end(), Data.GetForm(a_baseID));
+		auto b_pos = std::distance(FormArray.begin(), t_pos);
+		BoolArray.at(b_pos) = true;
+
+		EntriesFound = std::ranges::count(BoolArray, true);
+		INFO("FOUND ITEMS LIST = {}", FoundItemData.data.size());
+	}
+
+	//---------------------------------------------------
+	//-- Framework Functions ( Send Notification ) ------
+	//---------------------------------------------------
+
+	void BookHandler::SendNotification(std::string a_msg) {
+
+		if (!MCMScript->GetProperty("NotifyItems")->GetBool()) { return; }
+
+		auto message = fmt::format("<font color='{:s}'>{:s}</font>"sv, MCMScript->GetProperty("ColourString")->GetString(), a_msg);
+		if (!MCMScript->GetProperty("NotificationColourEnabled")->GetBool()) { RE::DebugNotification(a_msg.c_str()); return; }
+		RE::DebugNotification(message.c_str());
+	}
+
+	//---------------------------------------------------
+	//-- Framework Functions ( Form Injection ) ---------
+	//---------------------------------------------------
+
+	void BookHandler::InjectAndCompileData() {
+
+		auto handler = RE::TESDataHandler::GetSingleton();
+		MCMScript = ScriptObject::FromForm(static_cast<RE::TESForm*>(handler->LookupForm(0x00800, "Completionist.esp")), "Completionist_MCMScript");
+
+		Data.CompileFormArray(CFramework_Books_DB::BookForms, "Dragonborn.esm");
+		Data.MergeAsCollectable();
+
+		CFramework_Books_DB::Data.Populate(NameArray, FormArray, BoolArray, TextArray);
+		for (auto i = 0; i < FormArray.size(); i++) {
+			if (FormArray[i]) {
+				auto* book = static_cast<RE::TESObjectBOOK*>(FormArray[i]);
+				if (book->GetSpell()) {
+					TextArray[i] = "$AddSpellTomeHighlight{" + NameArray[i] + "}{" + book->GetSpell()->GetName() + "}";
+				}
+				else if (book->TeachesSkill()) {
+					TextArray[i] = "$AddSkillBookHighlight{" + NameArray[i] + "}{" + CFramework_Master::FrameworkAPI::GetBookSkill(book->GetSkill()) + "}";
+				}
+			}
+		}
+		EntriesTotal = FormArray.size();
+		EntriesFound = std::ranges::count(BoolArray, true);
+	}
+
+	//---------------------------------------------------
+	//-- Framework Functions ( Update Found Forms ) -----
+	//---------------------------------------------------
+
+	void BookHandler::UpdateFoundForms() {
+
+		for (auto i = 0; i < FormArray.size(); i++) {
+
+			if (auto* book = static_cast<RE::TESObjectBOOK*>(FormArray[i]); book) {
+				if (book->IsRead() || (book->GetSpell() && CFramework_BooksManager::Player->HasSpell(book->GetSpell())) || FoundItemData.HasForm(book->GetFormID())) {
+					auto base = Data.GetBase(book->GetFormID()) ? Data.GetBase(book->GetFormID()) : book->GetFormID();
+					BookHandler::ProcessFoundForm(base, FormArray[i]->GetFormID(), true);
+				}
+			}
+		}
+
+		EntriesTotal = FormArray.size();
+		EntriesFound = std::ranges::count(BoolArray, true);
+	}
+
+	//---------------------------------------------------
+	//-- Framework Functions ( MCM is Entry Complete ) --
+	//---------------------------------------------------
+
+	uint32_t BookHandler::IsOptionCompleted(std::string a_name) {
+
+		if (auto t_pos = std::find(NameArray.begin(), NameArray.end(), a_name); t_pos != NameArray.end()) {
+			return uint32_t(BoolArray[std::distance(NameArray.begin(), t_pos)]);
+		}
+		return -1;
+	}
+
+	//---------------------------------------------------
+	//-- Framework Functions ( MCM Set Entry Complete ) -
+	//---------------------------------------------------
+
+	void BookHandler::SetOptionCompleted(std::string a_name) {
+
+		if (auto t_pos = std::find(NameArray.begin(), NameArray.end(), a_name); t_pos != NameArray.end()) {
+			auto b_pos = std::distance(NameArray.begin(), t_pos);
+
+			if (BoolArray.at(b_pos)) {
+				BoolArray.at(b_pos) = false;
+
+				FoundItemData.RemoveForm(FormArray.at(b_pos)->GetFormID());
+				for (auto var : Data.GetAllVariations()) {
+					if (Data.GetBase(var) == FormArray.at(b_pos)->GetFormID()) {
+						FoundItemData.RemoveForm(var);
+					}
+				}
+			}
+			else {
+				BoolArray.at(b_pos) = true;
+				FoundItemData.AddForm(FormArray.at(b_pos)->GetFormID());
+				for (auto var : Data.GetAllVariations()) {
+					if (Data.GetBase(var) == FormArray.at(b_pos)->GetFormID()) {
+						FoundItemData.AddForm(var);
+					}
+				}
+			}
+
+			EntriesTotal = FormArray.size();
+			EntriesFound = std::ranges::count(BoolArray, true);
+		}
+	}
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------------ Dragonborn Spell Tomes
+//------------------------------------------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------------
+
+namespace CFramework_Books_DBS {
+
+	using namespace CFramework_Master;
+
+	// clang-format off
+
+	constexpr Serialization::FormArray BookForms = {
+	0x0177B5,0x0177AC,0x01CE07,0x01AABA,0x01E2B1,0x033C67,0x0177BD,0x020685,
+	0x0177AD,
+	};
+
+	// clang-format on
+
+	Serialization::CompletionistData Data;
+
+	std::vector<std::string> NameArray{};
+	std::vector<std::string> TextArray{};
+	std::vector<RE::TESForm*> FormArray{};
+	std::vector<bool> BoolArray{};
+
+	inline ScriptObjectPtr  MCMScript;
+
+	inline uint32_t EntriesTotal;
+	inline uint32_t EntriesFound;
+
+	RE::Actor* Player;
+
+	//---------------------------------------------------
+	//-- Framework Functions ( Install Framework ) ------
+	//---------------------------------------------------
+
+	void BookHandler::InstallFramework() {
+
+		BookHandler::Sink();
+		MenuHandler::Sink();
+
+		BookHandler::InjectAndCompileData();
+	}
+
+	//---------------------------------------------------
+	//-- Framework Functions ( Get Singleton ) ----------
+	//---------------------------------------------------
+
+	auto BookHandler::GetSingleton() -> BookHandler* {
+		static BookHandler singleton;
+		return std::addressof(singleton);
+	}
+
+	auto MenuHandler::GetSingleton() -> MenuHandler* {
+		static MenuHandler singleton;
+		return std::addressof(singleton);
+	}
+
+	//---------------------------------------------------
+	//-- Framework Functions ( Sink Event ) -------------
+	//---------------------------------------------------
+
+	void BookHandler::Sink() {
+		RE::BooksRead::GetEventSource()->AddEventSink(BookHandler::GetSingleton());
+	}
+
+	void MenuHandler::Sink() {
+		auto UserInterface = RE::UI::GetSingleton();
+		UserInterface->AddEventSink(static_cast<RE::BSTEventSink<RE::MenuOpenCloseEvent>*>(MenuHandler::GetSingleton()));
+	}
+
+	//---------------------------------------------------
+	//-- Framework Events ( On Item Added ) -------------
+	//---------------------------------------------------
+
+	auto BookHandler::ProcessEvent(RE::BooksRead::Event const* a_event, [[maybe_unused]] RE::BSTEventSource<RE::BooksRead::Event>* a_eventSource) -> RE::BSEventNotifyControl {
+
+		if (a_event == nullptr || !Data.HasForm(a_event->book->GetFormID())) { return RE::BSEventNotifyControl::kContinue; }
+
+		auto base = Data.GetBase(a_event->book->GetFormID()) ? Data.GetBase(a_event->book->GetFormID()) : a_event->book->GetFormID();
+		BookHandler::ProcessFoundForm(base, a_event->book->GetFormID(), false);
+		return EventResult::kContinue;
+	}
+
+	auto MenuHandler::ProcessEvent(RE::MenuOpenCloseEvent const* a_event, [[maybe_unused]] RE::BSTEventSource<RE::MenuOpenCloseEvent>* a_eventSource) -> RE::BSEventNotifyControl {
+
+		if (!a_event) { return RE::BSEventNotifyControl::kContinue; }
+
+		if (a_event->menuName == RE::BookMenu::MENU_NAME && a_event->opening && Data.HasForm(RE::BookMenu::GetTargetForm()->GetFormID())) {
+			if (auto target = RE::BookMenu::GetTargetForm()->GetFormID(); target) {
+				auto base = Data.GetBase(target) ? Data.GetBase(target) : target;
+				BookHandler::ProcessFoundForm(base, target, false);
+				return EventResult::kContinue;
+			}
+			return EventResult::kContinue;
+		}
+		return EventResult::kContinue;
+	}
+
+	//---------------------------------------------------
+	//-- Framework Functions ( Process Map Marker ) -----
+	//---------------------------------------------------
+
+	void BookHandler::ProcessFoundForm(RE::FormID a_baseID, RE::FormID a_eventID, bool a_supress) {
+
+		if (!FoundItemData.HasForm(a_eventID) && !a_supress) {
+			auto msg = fmt::format("Completionist: Entry Complete - {:s}!"sv, Data.GetForm(a_eventID)->GetName());
+			BookHandler::SendNotification(msg);
+		}
+
+		FoundItemData.AddForm(a_baseID);
+		for (auto var : Data.GetAllVariations()) {
+			if (Data.GetBase(var) == a_baseID) {
+				FoundItemData.AddForm(var);
+			}
+		}
+
+		auto t_pos = std::find(FormArray.begin(), FormArray.end(), Data.GetForm(a_baseID));
+		auto b_pos = std::distance(FormArray.begin(), t_pos);
+		BoolArray.at(b_pos) = true;
+
+		EntriesFound = std::ranges::count(BoolArray, true);
+		INFO("FOUND ITEMS LIST = {}", FoundItemData.data.size());
+	}
+
+	//---------------------------------------------------
+	//-- Framework Functions ( Send Notification ) ------
+	//---------------------------------------------------
+
+	void BookHandler::SendNotification(std::string a_msg) {
+
+		if (!MCMScript->GetProperty("NotifyItems")->GetBool()) { return; }
+
+		auto message = fmt::format("<font color='{:s}'>{:s}</font>"sv, MCMScript->GetProperty("ColourString")->GetString(), a_msg);
+		if (!MCMScript->GetProperty("NotificationColourEnabled")->GetBool()) { RE::DebugNotification(a_msg.c_str()); return; }
+		RE::DebugNotification(message.c_str());
+	}
+
+	//---------------------------------------------------
+	//-- Framework Functions ( Form Injection ) ---------
+	//---------------------------------------------------
+
+	void BookHandler::InjectAndCompileData() {
+
+		auto handler = RE::TESDataHandler::GetSingleton();
+		MCMScript = ScriptObject::FromForm(static_cast<RE::TESForm*>(handler->LookupForm(0x00800, "Completionist.esp")), "Completionist_MCMScript");
+
+		Data.CompileFormArray(CFramework_Books_DBS::BookForms, "Dragonborn.esm");
+
+		Data.MergeAsCollectable();
+
+		CFramework_Books_DBS::Data.Populate(NameArray, FormArray, BoolArray, TextArray);
+		for (auto i = 0; i < FormArray.size(); i++) {
+			if (FormArray[i]) {
+				auto* book = static_cast<RE::TESObjectBOOK*>(FormArray[i]);
+				if (book->GetSpell()) {
+					TextArray[i] = "$AddSpellTomeHighlight{" + NameArray[i] + "}{" + book->GetSpell()->GetName() + "}";
+				}
+				else if (book->TeachesSkill()) {
+					TextArray[i] = "$AddSkillBookHighlight{" + NameArray[i] + "}{" + CFramework_Master::FrameworkAPI::GetBookSkill(book->GetSkill()) + "}";
+				}
+			}
+		}
+		EntriesTotal = FormArray.size();
+		EntriesFound = std::ranges::count(BoolArray, true);
+	}
+
+	//---------------------------------------------------
+	//-- Framework Functions ( Update Found Forms ) -----
+	//---------------------------------------------------
+
+	void BookHandler::UpdateFoundForms() {
+
+		for (auto i = 0; i < FormArray.size(); i++) {
+
+			if (auto* book = static_cast<RE::TESObjectBOOK*>(FormArray[i]); book) {
+				if (book->IsRead() || (book->GetSpell() && CFramework_BooksManager::Player->HasSpell(book->GetSpell())) || FoundItemData.HasForm(book->GetFormID())) {
+					auto base = Data.GetBase(book->GetFormID()) ? Data.GetBase(book->GetFormID()) : book->GetFormID();
+					BookHandler::ProcessFoundForm(base, FormArray[i]->GetFormID(), true);
+				}
+			}
+		}
+
+		EntriesTotal = FormArray.size();
+		EntriesFound = std::ranges::count(BoolArray, true);
+	}
+
+	//---------------------------------------------------
+	//-- Framework Functions ( MCM is Entry Complete ) --
+	//---------------------------------------------------
+
+	uint32_t BookHandler::IsOptionCompleted(std::string a_name) {
+
+		if (auto t_pos = std::find(NameArray.begin(), NameArray.end(), a_name); t_pos != NameArray.end()) {
+			return uint32_t(BoolArray[std::distance(NameArray.begin(), t_pos)]);
+		}
+		return -1;
 	}
 
 	//---------------------------------------------------
