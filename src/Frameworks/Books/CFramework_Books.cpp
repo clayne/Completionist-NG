@@ -159,7 +159,7 @@ namespace CFramework_Books_AG {
 
 		if (!FoundItemData.HasForm(a_eventID) && !a_supress) {
 			auto msg = fmt::format("Completionist: Entry Complete - {:s}!"sv, Data.GetForm(a_eventID)->GetName());
-			BookHandler::SendNotification(msg);
+			FrameworkAPI::SendNotification(msg, "NotifyBooks");
 		}
 
 		FoundItemData.AddForm(a_baseID);
@@ -175,19 +175,6 @@ namespace CFramework_Books_AG {
 
 		EntriesFound = std::ranges::count(BoolArray, true);
 		INFO("FOUND ITEMS LIST = {}", FoundItemData.data.size());
-	}
-
-	//---------------------------------------------------
-	//-- Framework Functions ( Send Notification ) ------
-	//---------------------------------------------------
-
-	void BookHandler::SendNotification(std::string a_msg) {
-
-		if (!MCMScript->GetProperty("NotifyItems")->GetBool()) { return; }
-
-		auto message = fmt::format("<font color='{:s}'>{:s}</font>"sv, MCMScript->GetProperty("ColourString")->GetString(), a_msg);
-		if (!MCMScript->GetProperty("NotificationColourEnabled")->GetBool()) { RE::DebugNotification(a_msg.c_str()); return; }
-		RE::DebugNotification(message.c_str());
 	}
 
 	//---------------------------------------------------
@@ -399,7 +386,7 @@ namespace CFramework_Books_HS {
 
 		if (!FoundItemData.HasForm(a_eventID) && !a_supress) {
 			auto msg = fmt::format("Completionist: Entry Complete - {:s}!"sv, Data.GetForm(a_eventID)->GetName());
-			BookHandler::SendNotification(msg);
+			FrameworkAPI::SendNotification(msg, "NotifyBooks");
 		}
 
 		FoundItemData.AddForm(a_baseID);
@@ -415,19 +402,6 @@ namespace CFramework_Books_HS {
 
 		EntriesFound = std::ranges::count(BoolArray, true);
 		INFO("FOUND ITEMS LIST = {}", FoundItemData.data.size());
-	}
-
-	//---------------------------------------------------
-	//-- Framework Functions ( Send Notification ) ------
-	//---------------------------------------------------
-
-	void BookHandler::SendNotification(std::string a_msg) {
-
-		if (!MCMScript->GetProperty("NotifyItems")->GetBool()) { return; }
-
-		auto message = fmt::format("<font color='{:s}'>{:s}</font>"sv, MCMScript->GetProperty("ColourString")->GetString(), a_msg);
-		if (!MCMScript->GetProperty("NotificationColourEnabled")->GetBool()) { RE::DebugNotification(a_msg.c_str()); return; }
-		RE::DebugNotification(message.c_str());
 	}
 
 	//---------------------------------------------------
@@ -641,7 +615,7 @@ namespace CFramework_Books_TY {
 
 		if (!FoundItemData.HasForm(a_eventID) && !a_supress) {
 			auto msg = fmt::format("Completionist: Entry Complete - {:s}!"sv, Data.GetForm(a_eventID)->GetName());
-			BookHandler::SendNotification(msg);
+			FrameworkAPI::SendNotification(msg, "NotifyBooks");
 		}
 
 		FoundItemData.AddForm(a_baseID);
@@ -657,19 +631,6 @@ namespace CFramework_Books_TY {
 
 		EntriesFound = std::ranges::count(BoolArray, true);
 		INFO("FOUND ITEMS LIST = {}", FoundItemData.data.size());
-	}
-
-	//---------------------------------------------------
-	//-- Framework Functions ( Send Notification ) ------
-	//---------------------------------------------------
-
-	void BookHandler::SendNotification(std::string a_msg) {
-
-		if (!MCMScript->GetProperty("NotifyItems")->GetBool()) { return; }
-
-		auto message = fmt::format("<font color='{:s}'>{:s}</font>"sv, MCMScript->GetProperty("ColourString")->GetString(), a_msg);
-		if (!MCMScript->GetProperty("NotificationColourEnabled")->GetBool()) { RE::DebugNotification(a_msg.c_str()); return; }
-		RE::DebugNotification(message.c_str());
 	}
 
 	//---------------------------------------------------
@@ -881,7 +842,7 @@ namespace CFramework_Books_SB {
 
 		if (!FoundItemData.HasForm(a_eventID) && !a_supress) {
 			auto msg = fmt::format("Completionist: Entry Complete - {:s}!"sv, Data.GetForm(a_eventID)->GetName());
-			BookHandler::SendNotification(msg);
+			FrameworkAPI::SendNotification(msg, "NotifyBooks");
 		}
 
 		FoundItemData.AddForm(a_baseID);
@@ -897,19 +858,6 @@ namespace CFramework_Books_SB {
 
 		EntriesFound = std::ranges::count(BoolArray, true);
 		INFO("FOUND ITEMS LIST = {}", FoundItemData.data.size());
-	}
-
-	//---------------------------------------------------
-	//-- Framework Functions ( Send Notification ) ------
-	//---------------------------------------------------
-
-	void BookHandler::SendNotification(std::string a_msg) {
-
-		if (!MCMScript->GetProperty("NotifyItems")->GetBool()) { return; }
-
-		auto message = fmt::format("<font color='{:s}'>{:s}</font>"sv, MCMScript->GetProperty("ColourString")->GetString(), a_msg);
-		if (!MCMScript->GetProperty("NotificationColourEnabled")->GetBool()) { RE::DebugNotification(a_msg.c_str()); return; }
-		RE::DebugNotification(message.c_str());
 	}
 
 	//---------------------------------------------------
@@ -1123,7 +1071,7 @@ namespace CFramework_Books_ST {
 
 		if (!FoundItemData.HasForm(a_eventID) && !a_supress) {
 			auto msg = fmt::format("Completionist: Entry Complete - {:s}!"sv, Data.GetForm(a_eventID)->GetName());
-			BookHandler::SendNotification(msg);
+			FrameworkAPI::SendNotification(msg, "NotifyBooks");
 		}
 
 		FoundItemData.AddForm(a_baseID);
@@ -1139,19 +1087,6 @@ namespace CFramework_Books_ST {
 
 		EntriesFound = std::ranges::count(BoolArray, true);
 		INFO("FOUND ITEMS LIST = {}", FoundItemData.data.size());
-	}
-
-	//---------------------------------------------------
-	//-- Framework Functions ( Send Notification ) ------
-	//---------------------------------------------------
-
-	void BookHandler::SendNotification(std::string a_msg) {
-
-		if (!MCMScript->GetProperty("NotifyItems")->GetBool()) { return; }
-
-		auto message = fmt::format("<font color='{:s}'>{:s}</font>"sv, MCMScript->GetProperty("ColourString")->GetString(), a_msg);
-		if (!MCMScript->GetProperty("NotificationColourEnabled")->GetBool()) { RE::DebugNotification(a_msg.c_str()); return; }
-		RE::DebugNotification(message.c_str());
 	}
 
 	//---------------------------------------------------
@@ -1359,7 +1294,7 @@ namespace CFramework_Books_DG {
 
 		if (!FoundItemData.HasForm(a_eventID) && !a_supress) {
 			auto msg = fmt::format("Completionist: Entry Complete - {:s}!"sv, Data.GetForm(a_eventID)->GetName());
-			BookHandler::SendNotification(msg);
+			FrameworkAPI::SendNotification(msg, "NotifyBooks");
 		}
 
 		FoundItemData.AddForm(a_baseID);
@@ -1375,19 +1310,6 @@ namespace CFramework_Books_DG {
 
 		EntriesFound = std::ranges::count(BoolArray, true);
 		INFO("FOUND ITEMS LIST = {}", FoundItemData.data.size());
-	}
-
-	//---------------------------------------------------
-	//-- Framework Functions ( Send Notification ) ------
-	//---------------------------------------------------
-
-	void BookHandler::SendNotification(std::string a_msg) {
-
-		if (!MCMScript->GetProperty("NotifyItems")->GetBool()) { return; }
-
-		auto message = fmt::format("<font color='{:s}'>{:s}</font>"sv, MCMScript->GetProperty("ColourString")->GetString(), a_msg);
-		if (!MCMScript->GetProperty("NotificationColourEnabled")->GetBool()) { RE::DebugNotification(a_msg.c_str()); return; }
-		RE::DebugNotification(message.c_str());
 	}
 
 	//---------------------------------------------------
@@ -1592,7 +1514,7 @@ namespace CFramework_Books_DGS {
 
 		if (!FoundItemData.HasForm(a_eventID) && !a_supress) {
 			auto msg = fmt::format("Completionist: Entry Complete - {:s}!"sv, Data.GetForm(a_eventID)->GetName());
-			BookHandler::SendNotification(msg);
+			FrameworkAPI::SendNotification(msg, "NotifyBooks");
 		}
 
 		FoundItemData.AddForm(a_baseID);
@@ -1608,19 +1530,6 @@ namespace CFramework_Books_DGS {
 
 		EntriesFound = std::ranges::count(BoolArray, true);
 		INFO("FOUND ITEMS LIST = {}", FoundItemData.data.size());
-	}
-
-	//---------------------------------------------------
-	//-- Framework Functions ( Send Notification ) ------
-	//---------------------------------------------------
-
-	void BookHandler::SendNotification(std::string a_msg) {
-
-		if (!MCMScript->GetProperty("NotifyItems")->GetBool()) { return; }
-
-		auto message = fmt::format("<font color='{:s}'>{:s}</font>"sv, MCMScript->GetProperty("ColourString")->GetString(), a_msg);
-		if (!MCMScript->GetProperty("NotificationColourEnabled")->GetBool()) { RE::DebugNotification(a_msg.c_str()); return; }
-		RE::DebugNotification(message.c_str());
 	}
 
 	//---------------------------------------------------
@@ -1831,7 +1740,7 @@ namespace CFramework_Books_DB {
 
 		if (!FoundItemData.HasForm(a_eventID) && !a_supress) {
 			auto msg = fmt::format("Completionist: Entry Complete - {:s}!"sv, Data.GetForm(a_eventID)->GetName());
-			BookHandler::SendNotification(msg);
+			FrameworkAPI::SendNotification(msg, "NotifyBooks");
 		}
 
 		FoundItemData.AddForm(a_baseID);
@@ -1847,19 +1756,6 @@ namespace CFramework_Books_DB {
 
 		EntriesFound = std::ranges::count(BoolArray, true);
 		INFO("FOUND ITEMS LIST = {}", FoundItemData.data.size());
-	}
-
-	//---------------------------------------------------
-	//-- Framework Functions ( Send Notification ) ------
-	//---------------------------------------------------
-
-	void BookHandler::SendNotification(std::string a_msg) {
-
-		if (!MCMScript->GetProperty("NotifyItems")->GetBool()) { return; }
-
-		auto message = fmt::format("<font color='{:s}'>{:s}</font>"sv, MCMScript->GetProperty("ColourString")->GetString(), a_msg);
-		if (!MCMScript->GetProperty("NotificationColourEnabled")->GetBool()) { RE::DebugNotification(a_msg.c_str()); return; }
-		RE::DebugNotification(message.c_str());
 	}
 
 	//---------------------------------------------------
@@ -2065,7 +1961,7 @@ namespace CFramework_Books_DBS {
 
 		if (!FoundItemData.HasForm(a_eventID) && !a_supress) {
 			auto msg = fmt::format("Completionist: Entry Complete - {:s}!"sv, Data.GetForm(a_eventID)->GetName());
-			BookHandler::SendNotification(msg);
+			FrameworkAPI::SendNotification(msg, "NotifyBooks");
 		}
 
 		FoundItemData.AddForm(a_baseID);
@@ -2081,19 +1977,6 @@ namespace CFramework_Books_DBS {
 
 		EntriesFound = std::ranges::count(BoolArray, true);
 		INFO("FOUND ITEMS LIST = {}", FoundItemData.data.size());
-	}
-
-	//---------------------------------------------------
-	//-- Framework Functions ( Send Notification ) ------
-	//---------------------------------------------------
-
-	void BookHandler::SendNotification(std::string a_msg) {
-
-		if (!MCMScript->GetProperty("NotifyItems")->GetBool()) { return; }
-
-		auto message = fmt::format("<font color='{:s}'>{:s}</font>"sv, MCMScript->GetProperty("ColourString")->GetString(), a_msg);
-		if (!MCMScript->GetProperty("NotificationColourEnabled")->GetBool()) { RE::DebugNotification(a_msg.c_str()); return; }
-		RE::DebugNotification(message.c_str());
 	}
 
 	//---------------------------------------------------

@@ -12,9 +12,11 @@
 #include "Items/CFramework_Barenziah.hpp"
 
 //Misc Frameworks
+#include "Books/CFramework_Maps.hpp"
 #include "Books/CFramework_Books.hpp"
 #include "Locations/CFramework_Locations.hpp"
 #include "Enchantments/CFramework_Enchantments.hpp"
+#include "Player Homes/CFramework_PlayerHomes.hpp"
 
 //Blessings Frameworks
 #include "Blessings/CFramework_Shrines.hpp"
@@ -36,15 +38,11 @@ namespace CFramework_Master {
 	std::vector<std::string> EmptyTextArray;
 	std::vector<bool> EmptyBoolArray;
 
-	inline ScriptObjectPtr MCMScript2;
-
 	//---------------------------------------------------
 	//-- Framework Functions ( Master Registration ) ----
 	//---------------------------------------------------
 
 	void FrameworkAPI::Register() {
-
-		MCMScript2 = ScriptObject::FromForm(static_cast<RE::TESForm*>(RE::TESDataHandler::GetSingleton()->LookupForm(0x00806, "Completionist.esp")), "Completionist_MCMScript2");
 
 		FoundItemData.SetAsSerializable();
 		FoundItemData_NoShow.SetAsSerializable();
@@ -52,20 +50,22 @@ namespace CFramework_Master {
 		auto papyrus = SKSE::GetPapyrusInterface();
 		papyrus->Register(FrameworkAPI::RegisterFunctions);
 
-		CFramework_CCManager::CHandler::InstallFramework();
-
-		CFramework_Items::CHandler::InstallFramework();
+		//Items
 		CFramework_Armor::CHandler::InstallFramework();
-		CFramework_Jewelry::CHandler::InstallFramework();
+		CFramework_Items::CHandler::InstallFramework();
 		CFramework_Liquor::CHandler::InstallFramework();
+		CFramework_Jewelry::CHandler::InstallFramework();
 		CFramework_Weapons::CHandler::InstallFramework();
 		CFramework_Barenziah::CHandler::InstallFramework();
 
+		//Dragon Claws
 		CFramework_DragonClaws_V::CHandler::InstallFramework();
 		CFramework_DragonClaws_P::CHandler::InstallFramework();
 		CFramework_DragonMasks_V::CHandler::InstallFramework();
 		CFramework_DragonMasks_P::CHandler::InstallFramework();
 
+		//Misc
+		CFramework_MapsManager::CHandler::InstallFramework();
 		CFramework_BooksManager::CHandler::InstallFramework();
 		CFramework_LocationsManager::CHandler::InstallFramework();
 		CFramework_EnchantmentsManager::CHandler::InstallFramework();
@@ -74,6 +74,14 @@ namespace CFramework_Master {
 		CFramework_Shrines_V::CHandler::InstallFramework();
 		CFramework_Shrines_P::CHandler::InstallFramework();
 		CFramework_Doomstones::CHandler::InstallFramework();
+
+		//Player Homes
+		CFramework_PlayerHomes_V::CHandler::InstallFramework();
+		CFramework_PlayerHomes_C::CHandler::InstallFramework();
+		CFramework_PlayerHomes_P::CHandler::InstallFramework();
+
+		//Creation Club
+		CFramework_CCManager::CHandler::InstallFramework();
 
 		// Patches
 		CPatchManager_Fishing::CHandler::InstallFramework();
@@ -149,8 +157,6 @@ namespace CFramework_Master {
 
 	void FrameworkAPI::Framework_Load() {
 
-		
-
 		//Items
 		CFramework_Armor::CHandler::UpdateFoundForms();
 		CFramework_Items::CHandler::UpdateFoundForms();
@@ -166,6 +172,7 @@ namespace CFramework_Master {
 		CFramework_DragonMasks_P::CHandler::UpdateFoundForms();
 
 		//Misc
+		CFramework_MapsManager::CHandler::UpdateFoundForms();
 		CFramework_BooksManager::CHandler::UpdateFoundForms();
 		CFramework_LocationsManager::CHandler::UpdateFoundForms();
 		CFramework_EnchantmentsManager::CHandler::UpdateFoundForms();
@@ -174,6 +181,11 @@ namespace CFramework_Master {
 		CFramework_Shrines_V::CHandler::UpdateFoundForms();
 		CFramework_Shrines_P::CHandler::UpdateFoundForms();
 		CFramework_Doomstones::CHandler::UpdateFoundForms();
+
+		//Player Homes
+		CFramework_PlayerHomes_V::CHandler::UpdateFoundForms();
+		CFramework_PlayerHomes_C::CHandler::UpdateFoundForms();
+		CFramework_PlayerHomes_P::CHandler::UpdateFoundForms();
 
 		//Creation Club
 		CFramework_CCManager::CHandler::UpdateFoundForms();
@@ -251,6 +263,15 @@ namespace CFramework_Master {
 		case 18:
 			return CFramework_Books_DBS::EntriesTotal;
 
+		case 37:
+			return CFramework_Maps_V::EntriesTotal;
+
+		case 38:
+			return CFramework_Maps_NTH::EntriesTotal;
+
+		case 39:
+			return CFramework_Maps_TH::EntriesTotal;
+
 			//-------------------------------------------- Locations
 
 		case 20:
@@ -292,6 +313,17 @@ namespace CFramework_Master {
 
 		case 33:
 			return CFramework_WEnchantments_P::EntriesTotal;
+
+			//-------------------------------------------- Player Homes
+
+		case 34:
+			return CFramework_PlayerHomes_V::EntriesTotal;
+
+		case 35:
+			return CFramework_PlayerHomes_C::EntriesTotal;
+
+		case 36:
+			return CFramework_PlayerHomes_P::EntriesTotal;
 
 			//-------------------------------------------- Fishing
 
@@ -407,6 +439,15 @@ namespace CFramework_Master {
 	case 18:
 		return CFramework_Books_DBS::EntriesFound;
 
+	case 37:
+		return CFramework_Maps_V::EntriesFound;
+
+	case 38:
+		return CFramework_Maps_NTH::EntriesFound;
+
+	case 39:
+		return CFramework_Maps_TH::EntriesFound;
+
 		//-------------------------------------------- Locations
 
 	case 20:
@@ -448,6 +489,17 @@ namespace CFramework_Master {
 
 	case 33:
 		return CFramework_WEnchantments_P::EntriesFound;
+
+		//-------------------------------------------- Player Homes
+
+	case 34:
+		return CFramework_PlayerHomes_V::EntriesFound;
+
+	case 35:
+		return CFramework_PlayerHomes_C::EntriesFound;
+
+	case 36:
+		return CFramework_PlayerHomes_P::EntriesFound;
 
 		//-------------------------------------------- Fishing
 
@@ -563,6 +615,15 @@ namespace CFramework_Master {
 		case 18:
 			return CFramework_Books_DBS::FormArray;
 
+		case 37:
+			return CFramework_Maps_V::FormArray;
+
+		case 38:
+			return CFramework_Maps_NTH::FormArray;
+
+		case 39:
+			return CFramework_Maps_TH::FormArray;
+
 			//-------------------------------------------- Locations
 
 		case 20:
@@ -604,6 +665,17 @@ namespace CFramework_Master {
 
 		case 33:
 			return CFramework_WEnchantments_P::FormArray;
+
+			//-------------------------------------------- Player Homes
+
+		case 34:
+			return CFramework_PlayerHomes_V::FormArray;
+
+		case 35:
+			return CFramework_PlayerHomes_C::FormArray;
+
+		case 36:
+			return CFramework_PlayerHomes_P::FormArray;
 
 			//-------------------------------------------- Fishing
 
@@ -661,8 +733,8 @@ namespace CFramework_Master {
 			//-------------------------------------------- Items
 
 		case 0:
-			return FrameworkHandler::HandleNameSet(FrameworkHandler::FrameworkID(a_ID));
-			//return CFramework_Armor::NameArray;
+			//return FrameworkHandler::HandleNameSet(FrameworkHandler::FrameworkID(a_ID));
+			return CFramework_Armor::NameArray;
 
 		case 1:
 			return CFramework_Jewelry::NameArray;
@@ -720,6 +792,15 @@ namespace CFramework_Master {
 		case 18:
 			return CFramework_Books_DBS::NameArray;
 
+		case 37:
+			return CFramework_Maps_V::NameArray;
+
+		case 38:
+			return CFramework_Maps_NTH::NameArray;
+
+		case 39:
+			return CFramework_Maps_TH::NameArray;
+
 			//-------------------------------------------- Locations
 
 		case 20:
@@ -761,6 +842,17 @@ namespace CFramework_Master {
 
 		case 33:
 			return CFramework_WEnchantments_P::NameArray;
+
+			//-------------------------------------------- Player Homes
+
+		case 34:
+			return CFramework_PlayerHomes_V::NameArray;
+
+		case 35:
+			return CFramework_PlayerHomes_C::NameArray;
+
+		case 36:
+			return CFramework_PlayerHomes_P::NameArray;
 
 			//-------------------------------------------- Fishing
 
@@ -876,6 +968,15 @@ namespace CFramework_Master {
 		case 18:
 			return CFramework_Books_DBS::TextArray;
 
+		case 37:
+			return CFramework_Maps_V::TextArray;
+
+		case 38:
+			return CFramework_Maps_NTH::TextArray;
+
+		case 39:
+			return CFramework_Maps_TH::TextArray;
+
 			//-------------------------------------------- Locations
 
 		case 20:
@@ -917,6 +1018,17 @@ namespace CFramework_Master {
 
 		case 33:
 			return CFramework_WEnchantments_P::TextArray;
+
+			//-------------------------------------------- Player Homes
+
+		case 34:
+			return CFramework_PlayerHomes_V::TextArray;
+
+		case 35:
+			return CFramework_PlayerHomes_C::TextArray;
+
+		case 36:
+			return CFramework_PlayerHomes_P::TextArray;
 
 			//-------------------------------------------- Fishing
 
@@ -1032,6 +1144,15 @@ namespace CFramework_Master {
 		case 18:
 			return CFramework_Books_DBS::BoolArray;
 
+		case 37:
+			return CFramework_Maps_V::BoolArray;
+
+		case 38:
+			return CFramework_Maps_NTH::BoolArray;
+
+		case 39:
+			return CFramework_Maps_TH::BoolArray;
+
 			//-------------------------------------------- Locations
 
 		case 20:
@@ -1073,6 +1194,17 @@ namespace CFramework_Master {
 
 		case 33:
 			return CFramework_WEnchantments_P::BoolArray;
+
+			//-------------------------------------------- Player Homes
+
+		case 34:
+			return CFramework_PlayerHomes_V::BoolArray;
+
+		case 35:
+			return CFramework_PlayerHomes_C::BoolArray;
+
+		case 36:
+			return CFramework_PlayerHomes_P::BoolArray;
 
 			//-------------------------------------------- Fishing
 
@@ -1188,6 +1320,15 @@ namespace CFramework_Master {
 		case 18:
 			return CFramework_Books_DBS::BookHandler::IsOptionCompleted(a_name);
 
+		case 37:
+			return CFramework_Maps_V::BookHandler::IsOptionCompleted(a_name);
+
+		case 38:
+			return CFramework_Maps_NTH::BookHandler::IsOptionCompleted(a_name);
+
+		case 39:
+			return CFramework_Maps_TH::BookHandler::IsOptionCompleted(a_name);
+
 			//-------------------------------------------- Blessings
 
 		case 26:
@@ -1212,6 +1353,17 @@ namespace CFramework_Master {
 
 		case 33:
 			return CFramework_WEnchantments_P::CHandler::IsOptionCompleted(a_name);
+
+			//-------------------------------------------- Player Homes
+
+		case 34:
+			return CFramework_PlayerHomes_V::CHandler::IsOptionCompleted(a_name);
+
+		case 35:
+			return CFramework_PlayerHomes_C::CHandler::IsOptionCompleted(a_name);
+
+		case 36:
+			return CFramework_PlayerHomes_P::CHandler::IsOptionCompleted(a_name);
 
 			//-------------------------------------------- Fishing
 
@@ -1331,6 +1483,18 @@ namespace CFramework_Master {
 			CFramework_Books_DBS::BookHandler::SetOptionCompleted(a_name);
 			break;
 
+		case 37:
+			CFramework_Maps_V::BookHandler::SetOptionCompleted(a_name);
+			break;
+
+		case 38:
+			CFramework_Maps_NTH::BookHandler::SetOptionCompleted(a_name);
+			break;
+
+		case 39:
+			CFramework_Maps_TH::BookHandler::SetOptionCompleted(a_name);
+			break;
+
 			//-------------------------------------------- Blessings
 
 		case 26:
@@ -1361,6 +1525,20 @@ namespace CFramework_Master {
 
 		case 33:
 			CFramework_WEnchantments_P::CHandler::SetOptionCompleted(a_name);
+			break;
+
+			//-------------------------------------------- Player Homes
+
+		case 34:
+			CFramework_PlayerHomes_V::CHandler::SetOptionCompleted(a_name);
+			break;
+
+		case 35:
+			CFramework_PlayerHomes_C::CHandler::SetOptionCompleted(a_name);
+			break;
+
+		case 36:
+			CFramework_PlayerHomes_P::CHandler::SetOptionCompleted(a_name);
 			break;
 
 			//-------------------------------------------- Fishing

@@ -98,8 +98,8 @@ namespace CFramework_Armor {
 	void CHandler::ProcessFoundForm(RE::FormID a_baseID, RE::FormID a_eventID) {
 
 		if (!FoundItemData.HasForm(a_eventID)) {
-			auto msg = fmt::format("Completionist: {:s} Acquired!"sv, Data.GetForm(a_eventID)->GetName());
-			CHandler::SendNotification(msg);
+			auto msg = fmt::format("Completionist: Entry Complete - {:s}!"sv, Data.GetForm(a_eventID)->GetName());
+			FrameworkAPI::SendNotification(msg, "NotifyItems");
 		}
 
 		FoundItemData.AddForm(a_baseID);
@@ -115,19 +115,6 @@ namespace CFramework_Armor {
 
 		EntriesFound = std::ranges::count(BoolArray, true);
 		INFO("FOUND ITEMS LIST = {}", FoundItemData.data.size());
-	}
-
-	//---------------------------------------------------
-	//-- Framework Functions ( Send Notification ) ------
-	//---------------------------------------------------
-
-	void CHandler::SendNotification(std::string a_msg) {
-
-		if (!MCMScript->GetProperty("NotifyItems")->GetBool()) { return; }
-
-		auto message = fmt::format("<font color='{:s}'>{:s}</font>"sv, MCMScript->GetProperty("ColourString")->GetString(), a_msg);
-		if (!MCMScript->GetProperty("NotificationColourEnabled")->GetBool()) { RE::DebugNotification(a_msg.c_str()); return; }
-		RE::DebugNotification(message.c_str());
 	}
 
 	//---------------------------------------------------
@@ -154,8 +141,8 @@ namespace CFramework_Armor {
 		EntriesTotal = FormArray.size();
 		EntriesFound = std::ranges::count(BoolArray, true);
 
-		using namespace FrameworkHandler;
-		//RegisterAs<FrameworkID::kArmor>(&NameArray, &FormArray, &BoolArray, &TextArray, &EntriesFound, &EntriesTotal, &Data);
+		//using namespace FrameworkHandler;
+		//RegisterAs<FrameworkID::kArmor>(&NameArray, &FormArray, &BoolArray, &TextArray);
 	}
 
 	//---------------------------------------------------

@@ -130,8 +130,8 @@ namespace CPatch_FishingItems {
 	void CHandler::ProcessFoundForm(RE::FormID a_baseID, RE::FormID a_eventID) {
 
 		if (!FoundItemData.HasForm(a_eventID)) {
-			auto msg = fmt::format("Completionist: {:s} Acquired!"sv, Data.GetForm(a_eventID)->GetName());
-			CHandler::SendNotification(msg);
+			auto msg = fmt::format("Completionist: Entry Complete - {:s}!"sv, Data.GetForm(a_eventID)->GetName());
+			FrameworkAPI::SendNotification(msg, "NotifyItems");
 		}
 
 		FoundItemData.AddForm(a_baseID);
@@ -147,19 +147,6 @@ namespace CPatch_FishingItems {
 
 		EntriesFound = std::ranges::count(BoolArray, true);
 		INFO("FOUND ITEMS LIST = {}", FoundItemData.data.size());
-	}
-
-	//---------------------------------------------------
-	//-- Framework Functions ( Send Notification ) ------
-	//---------------------------------------------------
-
-	void CHandler::SendNotification(std::string a_msg) {
-
-		if (!MCMScript->GetProperty("NotifyItems")->GetBool()) { return; }
-
-		auto message = fmt::format("<font color='{:s}'>{:s}</font>"sv, MCMScript->GetProperty("ColourString")->GetString(), a_msg);
-		if (!MCMScript->GetProperty("NotificationColourEnabled")->GetBool()) { RE::DebugNotification(a_msg.c_str()); return; }
-		RE::DebugNotification(message.c_str());
 	}
 
 	//---------------------------------------------------
@@ -329,9 +316,9 @@ namespace CPatch_FishingBooks {
 
 	void BHandler::ProcessFoundForm(RE::FormID a_baseID, RE::FormID a_eventID, bool a_supress) {
 
-		if (!FoundItemData.HasForm(a_eventID) && !a_supress) {
+		if (!FoundItemData.HasForm(a_eventID)) {
 			auto msg = fmt::format("Completionist: Entry Complete - {:s}!"sv, Data.GetForm(a_eventID)->GetName());
-			BHandler::SendNotification(msg);
+			FrameworkAPI::SendNotification(msg, "NotifyItems");
 		}
 
 		FoundItemData.AddForm(a_baseID);
@@ -347,19 +334,6 @@ namespace CPatch_FishingBooks {
 
 		EntriesFound = std::ranges::count(BoolArray, true);
 		INFO("FOUND ITEMS LIST = {}", FoundItemData.data.size());
-	}
-
-	//---------------------------------------------------
-	//-- Framework Functions ( Send Notification ) ------
-	//---------------------------------------------------
-
-	void BHandler::SendNotification(std::string a_msg) {
-
-		if (!MCMScript->GetProperty("NotifyItems")->GetBool()) { return; }
-
-		auto message = fmt::format("<font color='{:s}'>{:s}</font>"sv, MCMScript->GetProperty("ColourString")->GetString(), a_msg);
-		if (!MCMScript->GetProperty("NotificationColourEnabled")->GetBool()) { RE::DebugNotification(a_msg.c_str()); return; }
-		RE::DebugNotification(message.c_str());
 	}
 
 	//---------------------------------------------------
@@ -540,7 +514,7 @@ namespace CPatch_FishingSpots_A {
 
 		if (a_marker) {
 			if (auto extraMapMarker = Serialization::CompletionistData::GetMapMarkerInternal(a_marker); extraMapMarker && extraMapMarker->mapData) {
-				if (extraMapMarker->mapData->flags.any(RE::MapMarkerData::Flag::kVisible) && !a_marker->IsDisabled()) {
+				if (extraMapMarker->mapData->flags.all(RE::MapMarkerData::Flag::kVisible, RE::MapMarkerData::Flag::kCanTravelTo) && !a_marker->IsDisabled()) {
 					BoolArray[a_pos] = true;
 					FoundItemData.AddForm(a_marker);
 				}
@@ -563,6 +537,7 @@ namespace CPatch_FishingSpots_A {
 		Data.CompileFormArray(CPatch_FishingSpots_A::MapMarkers, "Completionist_ITP.esp");
 		CPatch_FishingSpots_A::Data.Populate(NameArray, FormArray, BoolArray, TextArray, true);
 
+		TextArray.clear();
 		for (auto& name : NameArray) {
 			TextArray.push_back("$AddLocationHighlight{" + name + "}");
 		}
@@ -670,7 +645,7 @@ namespace CPatch_FishingSpots_C {
 
 		if (a_marker) {
 			if (auto extraMapMarker = Serialization::CompletionistData::GetMapMarkerInternal(a_marker); extraMapMarker && extraMapMarker->mapData) {
-				if (extraMapMarker->mapData->flags.any(RE::MapMarkerData::Flag::kVisible) && !a_marker->IsDisabled()) {
+				if (extraMapMarker->mapData->flags.all(RE::MapMarkerData::Flag::kVisible, RE::MapMarkerData::Flag::kCanTravelTo) && !a_marker->IsDisabled()) {
 					BoolArray[a_pos] = true;
 					FoundItemData.AddForm(a_marker);
 				}
@@ -693,6 +668,7 @@ namespace CPatch_FishingSpots_C {
 		Data.CompileFormArray(CPatch_FishingSpots_C::MapMarkers, "Completionist_ITP.esp");
 		CPatch_FishingSpots_C::Data.Populate(NameArray, FormArray, BoolArray, TextArray, true);
 
+		TextArray.clear();
 		for (auto& name : NameArray) {
 			TextArray.push_back("$AddLocationHighlight{" + name + "}");
 		}
@@ -801,7 +777,7 @@ namespace CPatch_FishingSpots_L {
 
 		if (a_marker) {
 			if (auto extraMapMarker = Serialization::CompletionistData::GetMapMarkerInternal(a_marker); extraMapMarker && extraMapMarker->mapData) {
-				if (extraMapMarker->mapData->flags.any(RE::MapMarkerData::Flag::kVisible) && !a_marker->IsDisabled()) {
+				if (extraMapMarker->mapData->flags.all(RE::MapMarkerData::Flag::kVisible, RE::MapMarkerData::Flag::kCanTravelTo) && !a_marker->IsDisabled()) {
 					BoolArray[a_pos] = true;
 					FoundItemData.AddForm(a_marker);
 				}
@@ -824,6 +800,7 @@ namespace CPatch_FishingSpots_L {
 		Data.CompileFormArray(CPatch_FishingSpots_L::MapMarkers, "Completionist_ITP.esp");
 		CPatch_FishingSpots_L::Data.Populate(NameArray, FormArray, BoolArray, TextArray, true);
 
+		TextArray.clear();
 		for (auto& name : NameArray) {
 			TextArray.push_back("$AddLocationHighlight{" + name + "}");
 		}
@@ -933,7 +910,7 @@ namespace CPatch_FishingSpots_S {
 
 		if (a_marker) {
 			if (auto extraMapMarker = Serialization::CompletionistData::GetMapMarkerInternal(a_marker); extraMapMarker && extraMapMarker->mapData) {
-				if (extraMapMarker->mapData->flags.any(RE::MapMarkerData::Flag::kVisible) && !a_marker->IsDisabled()) {
+				if (extraMapMarker->mapData->flags.all(RE::MapMarkerData::Flag::kVisible, RE::MapMarkerData::Flag::kCanTravelTo) && !a_marker->IsDisabled()) {
 					BoolArray[a_pos] = true;
 					FoundItemData.AddForm(a_marker);
 				}
@@ -956,6 +933,7 @@ namespace CPatch_FishingSpots_S {
 		Data.CompileFormArray(CPatch_FishingSpots_S::MapMarkers, "Completionist_ITP.esp");
 		CPatch_FishingSpots_S::Data.Populate(NameArray, FormArray, BoolArray, TextArray, true);
 
+		TextArray.clear();
 		for (auto& name : NameArray) {
 			TextArray.push_back("$AddLocationHighlight{" + name + "}");
 		}

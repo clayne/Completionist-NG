@@ -119,7 +119,7 @@ namespace CFramework_CreationClub_L {
 
 		if (a_marker) {
 			if (auto extraMapMarker = Serialization::CompletionistData::GetMapMarkerInternal(a_marker); extraMapMarker && extraMapMarker->mapData) {
-				if (extraMapMarker->mapData->flags.any(RE::MapMarkerData::Flag::kVisible) && !a_marker->IsDisabled()) {
+				if (extraMapMarker->mapData->flags.all(RE::MapMarkerData::Flag::kVisible, RE::MapMarkerData::Flag::kCanTravelTo) && !a_marker->IsDisabled()) {
 					BoolArray[a_pos] = true;
 					FoundItemData.AddForm(a_marker);
 				}
@@ -199,6 +199,11 @@ namespace CFramework_CreationClub_L {
 
 		Data.CompileFormArray(CFramework_CreationClub_L::Locations, "");
 		CFramework_CreationClub_L::Data.Populate(NameArray, FormArray, BoolArray, TextArray, true);
+
+		TextArray.clear();
+		for (auto& name : NameArray) {
+			TextArray.push_back("$AddLocationHighlight{" + name + "}");
+		}
 
 		EntriesTotal = FormArray.size();
 		EntriesFound = std::ranges::count(BoolArray, true);
@@ -320,7 +325,7 @@ namespace CFramework_CreationClub_B {
 
 		if (!FoundItemData.HasForm(a_eventID) && !a_supress) {
 			auto msg = fmt::format("Completionist: Entry Complete - {:s}!"sv, Data.GetForm(a_eventID)->GetName());
-			BookHandler::SendNotification(msg);
+			FrameworkAPI::SendNotification(msg, "NotifyBooks");
 		}
 
 		FoundItemData.AddForm(a_baseID);
@@ -336,19 +341,6 @@ namespace CFramework_CreationClub_B {
 
 		EntriesFound = std::ranges::count(BoolArray, true);
 		INFO("FOUND ITEMS LIST = {}", FoundItemData.data.size());
-	}
-
-	//---------------------------------------------------
-	//-- Framework Functions ( Send Notification ) ------
-	//---------------------------------------------------
-
-	void BookHandler::SendNotification(std::string a_msg) {
-
-		if (!MCMScript->GetProperty("NotifyItems")->GetBool()) { return; }
-
-		auto message = fmt::format("<font color='{:s}'>{:s}</font>"sv, MCMScript->GetProperty("ColourString")->GetString(), a_msg);
-		if (!MCMScript->GetProperty("NotificationColourEnabled")->GetBool()) { RE::DebugNotification(a_msg.c_str()); return; }
-		RE::DebugNotification(message.c_str());
 	}
 
 	//---------------------------------------------------
@@ -618,7 +610,7 @@ namespace CFramework_CreationClub_S {
 
 		if (!FoundItemData.HasForm(a_eventID) && !a_supress) {
 			auto msg = fmt::format("Completionist: Entry Complete - {:s}!"sv, Data.GetForm(a_eventID)->GetName());
-			BookHandler::SendNotification(msg);
+			FrameworkAPI::SendNotification(msg, "NotifyBooks");
 		}
 
 		FoundItemData.AddForm(a_baseID);
@@ -634,19 +626,6 @@ namespace CFramework_CreationClub_S {
 
 		EntriesFound = std::ranges::count(BoolArray, true);
 		INFO("FOUND ITEMS LIST = {}", FoundItemData.data.size());
-	}
-
-	//---------------------------------------------------
-	//-- Framework Functions ( Send Notification ) ------
-	//---------------------------------------------------
-
-	void BookHandler::SendNotification(std::string a_msg) {
-
-		if (!MCMScript->GetProperty("NotifyItems")->GetBool()) { return; }
-
-		auto message = fmt::format("<font color='{:s}'>{:s}</font>"sv, MCMScript->GetProperty("ColourString")->GetString(), a_msg);
-		if (!MCMScript->GetProperty("NotificationColourEnabled")->GetBool()) { RE::DebugNotification(a_msg.c_str()); return; }
-		RE::DebugNotification(message.c_str());
 	}
 
 	//---------------------------------------------------
@@ -865,8 +844,8 @@ namespace CFramework_CreationClub_A {
 	void CHandler::ProcessFoundForm(RE::FormID a_baseID, RE::FormID a_eventID) {
 
 		if (!FoundItemData.HasForm(a_eventID)) {
-			auto msg = fmt::format("Completionist: {:s} Acquired!"sv, Data.GetForm(a_eventID)->GetName());
-			CHandler::SendNotification(msg);
+			auto msg = fmt::format("Completionist: Entry Complete - {:s}!"sv, Data.GetForm(a_eventID)->GetName());
+			FrameworkAPI::SendNotification(msg, "NotifyItems");
 		}
 
 		FoundItemData.AddForm(a_baseID);
@@ -882,19 +861,6 @@ namespace CFramework_CreationClub_A {
 
 		EntriesFound = std::ranges::count(BoolArray, true);
 		INFO("FOUND ITEMS LIST = {}", FoundItemData.data.size());
-	}
-
-	//---------------------------------------------------
-	//-- Framework Functions ( Send Notification ) ------
-	//---------------------------------------------------
-
-	void CHandler::SendNotification(std::string a_msg) {
-
-		if (!MCMScript->GetProperty("NotifyItems")->GetBool()) { return; }
-
-		auto message = fmt::format("<font color='{:s}'>{:s}</font>"sv, MCMScript->GetProperty("ColourString")->GetString(), a_msg);
-		if (!MCMScript->GetProperty("NotificationColourEnabled")->GetBool()) { RE::DebugNotification(a_msg.c_str()); return; }
-		RE::DebugNotification(message.c_str());
 	}
 
 	//---------------------------------------------------
@@ -1135,8 +1101,8 @@ namespace CFramework_CreationClub_I {
 	void CHandler::ProcessFoundForm(RE::FormID a_baseID, RE::FormID a_eventID) {
 
 		if (!FoundItemData.HasForm(a_eventID)) {
-			auto msg = fmt::format("Completionist: {:s} Acquired!"sv, Data.GetForm(a_eventID)->GetName());
-			CHandler::SendNotification(msg);
+			auto msg = fmt::format("Completionist: Entry Complete - {:s}!"sv, Data.GetForm(a_eventID)->GetName());
+			FrameworkAPI::SendNotification(msg, "NotifyItems");
 		}
 
 		FoundItemData.AddForm(a_baseID);
@@ -1152,19 +1118,6 @@ namespace CFramework_CreationClub_I {
 
 		EntriesFound = std::ranges::count(BoolArray, true);
 		INFO("FOUND ITEMS LIST = {}", FoundItemData.data.size());
-	}
-
-	//---------------------------------------------------
-	//-- Framework Functions ( Send Notification ) ------
-	//---------------------------------------------------
-
-	void CHandler::SendNotification(std::string a_msg) {
-
-		if (!MCMScript->GetProperty("NotifyItems")->GetBool()) { return; }
-
-		auto message = fmt::format("<font color='{:s}'>{:s}</font>"sv, MCMScript->GetProperty("ColourString")->GetString(), a_msg);
-		if (!MCMScript->GetProperty("NotificationColourEnabled")->GetBool()) { RE::DebugNotification(a_msg.c_str()); return; }
-		RE::DebugNotification(message.c_str());
 	}
 
 	//---------------------------------------------------
@@ -1336,8 +1289,8 @@ namespace CFramework_CreationClub_W {
 	void CHandler::ProcessFoundForm(RE::FormID a_baseID, RE::FormID a_eventID) {
 
 		if (!FoundItemData.HasForm(a_eventID)) {
-			auto msg = fmt::format("Completionist: {:s} Acquired!"sv, Data.GetForm(a_eventID)->GetName());
-			CHandler::SendNotification(msg);
+			auto msg = fmt::format("Completionist: Entry Complete - {:s}!"sv, Data.GetForm(a_eventID)->GetName());
+			FrameworkAPI::SendNotification(msg, "NotifyItems");
 		}
 
 		FoundItemData.AddForm(a_baseID);
@@ -1353,19 +1306,6 @@ namespace CFramework_CreationClub_W {
 
 		EntriesFound = std::ranges::count(BoolArray, true);
 		INFO("FOUND ITEMS LIST = {}", FoundItemData.data.size());
-	}
-
-	//---------------------------------------------------
-	//-- Framework Functions ( Send Notification ) ------
-	//---------------------------------------------------
-
-	void CHandler::SendNotification(std::string a_msg) {
-
-		if (!MCMScript->GetProperty("NotifyItems")->GetBool()) { return; }
-
-		auto message = fmt::format("<font color='{:s}'>{:s}</font>"sv, MCMScript->GetProperty("ColourString")->GetString(), a_msg);
-		if (!MCMScript->GetProperty("NotificationColourEnabled")->GetBool()) { RE::DebugNotification(a_msg.c_str()); return; }
-		RE::DebugNotification(message.c_str());
 	}
 
 	//---------------------------------------------------

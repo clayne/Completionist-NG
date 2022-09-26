@@ -19,6 +19,21 @@ namespace Serialization
 	struct CompletionistData
 	{
 		// modifier
+
+		//-------------------------------------------
+		//-------------------------------------------
+
+		[[nodiscard]] static bool IsModInstalled(std::string_view a_modname) noexcept
+		{
+			auto* handler = RE::TESDataHandler::GetSingleton();
+			return
+				handler->LookupLoadedModByName(a_modname) != nullptr ||
+				handler->LookupLoadedLightModByName(a_modname) != nullptr;
+		}
+
+		//-------------------------------------------
+		//-------------------------------------------
+
 		[[nodiscard]] void AddForm(RE::TESForm* a_form) noexcept
 		{
 			if (!a_form || !a_form->GetFormID()) {
@@ -27,6 +42,10 @@ namespace Serialization
 
 			data.try_emplace(a_form->GetFormID());
 		}
+
+		//-------------------------------------------
+		//-------------------------------------------
+
 		[[nodiscard]] void AddForm(RE::FormID a_form) noexcept
 		{
 			if (!a_form) {
@@ -35,6 +54,10 @@ namespace Serialization
 
 			data.try_emplace(a_form);
 		}
+
+		//-------------------------------------------
+		//-------------------------------------------
+
 		[[nodiscard]] void AddForm(RE::FormID a_form, std::string_view a_filename) noexcept
 		{
 			auto* handler = RE::TESDataHandler::GetSingleton();
@@ -45,6 +68,10 @@ namespace Serialization
 			auto form = handler->LookupFormID(a_form, a_filename);
 			data.try_emplace(form);
 		}
+
+		//-------------------------------------------
+		//-------------------------------------------
+
 		[[nodiscard]] void AddForm(RE::FormID a_base, std::string_view a_filename, RE::FormID a_variation) noexcept
 		{
 			auto* handler = RE::TESDataHandler::GetSingleton();
@@ -63,6 +90,10 @@ namespace Serialization
 				data.try_emplace(variation, base);
 			}
 		}
+
+		//-------------------------------------------
+		//-------------------------------------------
+
 		[[nodiscard]] void AddForm(RE::FormID a_base, std::string_view a_basefilename, RE::FormID a_variation, std::string a_modfilename) noexcept
 		{
 			auto* handler = RE::TESDataHandler::GetSingleton();
@@ -81,6 +112,10 @@ namespace Serialization
 				data.try_emplace(variation, base);
 			}
 		}
+
+		//-------------------------------------------
+		//-------------------------------------------
+
 		[[nodiscard]] void RemoveForm(RE::FormID a_form) noexcept
 		{
 			if (!HasForm(a_form)) {
@@ -90,16 +125,24 @@ namespace Serialization
 			data.erase(a_form);
 		}
 
-		// accessor
+		//-------------------------------------------
+		//-------------------------------------------
+
 		[[nodiscard]] bool HasForm(RE::FormID a_form) const noexcept
 		{
 			return data.contains(a_form);
 		}
 
+		//-------------------------------------------
+		//-------------------------------------------
+
 		[[nodiscard]] RE::TESForm* GetForm(RE::FormID a_form) noexcept
 		{
 			return HasForm(a_form) ? RE::TESForm::LookupByID(a_form) : nullptr;
 		}
+
+		//-------------------------------------------
+		//-------------------------------------------
 
 		template <typename T>
 		[[nodiscard]] T* GetForm(RE::FormID a_form) noexcept
@@ -276,7 +319,7 @@ namespace Serialization
 			return false;
 		}
 
-		void Populate(std::vector<std::string>& a_names, std::vector<RE::TESForm*>& a_forms, std::vector<bool>& a_bools, std::vector<std::string>& a_texts, bool a_isMarker = false)
+		void Populate(std::vector<std::string>& a_names, std::vector<RE::TESForm*>& a_forms, std::vector<bool>& a_bools, std::vector<std::string>& a_texts, bool a_isMarker = false, bool a_nosort = false)
 		{
 			a_names.clear();
 			a_forms.clear();
@@ -303,7 +346,9 @@ namespace Serialization
 
 			// instantiate the zipped view for sorting
 			std::vector<zipped_t> zipped = { std::ranges::begin(bases), std::ranges::end(bases) };
-			std::ranges::sort(zipped); 
+			if (!a_nosort) {
+				std::ranges::sort(zipped);
+			}
 
 			// unzip
 			for (auto& [name, data] : zipped) {
@@ -478,7 +523,7 @@ namespace FrameworkHandler
 	}
 
 	template <FrameworkID a_id>
-	static void RegisterAs(std::vector<std::string>* a_names, std::vector<RE::TESForm*>* a_forms, std::vector<bool>* a_bools, std::vector<std::string>* a_texts, uint32_t* a_found, uint32_t* a_total, CompletionistData* a_data) noexcept
+	static void RegisterAs(std::vector<std::string>* a_names, std::vector<RE::TESForm*>* a_forms, std::vector<bool>* a_bools, std::vector<std::string>* a_texts) noexcept
 		requires(a_id != FrameworkID::kTotal) // so no overflow/out of bound access
 	{
 		NameSet.try_emplace(a_id, a_names);
@@ -486,8 +531,8 @@ namespace FrameworkHandler
 		BoolSet.try_emplace(a_id, a_bools);
 		TextSet.try_emplace(a_id, a_texts);
 
-		FoundSet.try_emplace(a_id, a_found);
-		TotalSet.try_emplace(a_id, a_total);
-		CDataSet.try_emplace(a_id, a_data);
 	}
 } // namespace FrameworkHandler
+
+
+//static void RegisterAs(std::vector<std::string>* a_names, std::vector<RE::TESForm*>* a_forms, std::vector<bool>* a_bools, std::vector<std::string>* a_texts, uint32_t* a_found, uint32_t* a_total, CompletionistData* a_data) noexcept

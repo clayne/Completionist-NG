@@ -1,6 +1,4 @@
-#include "PCH.h"
 #include "Radiant Quests Manager.hpp"
-#include "Homes.hpp"
 #include "Quests_Bounty.hpp"
 #include "Quests_College.hpp"
 #include "Quests_Companions.hpp"
@@ -9,6 +7,7 @@
 #include "Quests_Misc.hpp"
 #include "Quests_SupportedMods.hpp"
 #include "Quests_ThievesGuild.hpp"
+#include "Quests_Beggars.hpp"
 
 namespace Quest_Manager
 {
@@ -522,7 +521,7 @@ namespace Quest_Manager
 
 	void Install() {
 
-		CCHomes::ScriptEventHandler::Register();
+		BeggarQuests::ScriptEventHandler::Register();
 		BountyQuests::ScriptEventHandler::Register();
 		CollegeQuests::ScriptEventHandler::Register();
 		CompanionsQuests::ScriptEventHandler::Register();

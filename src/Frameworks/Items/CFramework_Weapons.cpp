@@ -102,8 +102,8 @@ namespace CFramework_Weapons {
 			BoolArray.at(b_pos) = true;
 
 			if (!FoundItemData.HasForm(a_eventID)) {
-				auto msg = fmt::format("Completionist: {:s} Acquired!"sv, Data.GetForm(a_eventID)->GetName());
-				CHandler::SendNotification(msg);
+				auto msg = fmt::format("Completionist: Entry Complete - {:s}!"sv, Data.GetForm(a_eventID)->GetName());
+				FrameworkAPI::SendNotification(msg, "NotifyItems");
 			}
 
 			FoundItemData.AddForm(a_baseID);
@@ -117,19 +117,6 @@ namespace CFramework_Weapons {
 			EntriesFound = std::ranges::count(BoolArray, true);
 			INFO("FOUND ITEMS LIST = {}", FoundItemData.data.size());
 		}
-	}
-
-	//---------------------------------------------------
-	//-- Framework Functions ( Send Notification ) ------
-	//---------------------------------------------------
-
-	void CHandler::SendNotification(std::string a_msg) {
-
-		if (!MCMScript->GetProperty("NotifyItems")->GetBool()) { return; }
-
-		auto message = fmt::format("<font color='{:s}'>{:s}</font>"sv, MCMScript->GetProperty("ColourString")->GetString(), a_msg);
-		if (!MCMScript->GetProperty("NotificationColourEnabled")->GetBool()) { RE::DebugNotification(a_msg.c_str()); return; }
-		RE::DebugNotification(message.c_str());
 	}
 
 	//---------------------------------------------------

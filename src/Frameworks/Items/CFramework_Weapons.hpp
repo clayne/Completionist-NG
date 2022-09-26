@@ -32,7 +32,6 @@ namespace CFramework_Weapons
 
 		static void			InstallFramework();
 		static void			ProcessFoundForm(RE::FormID a_baseID, RE::FormID a_curID);
-		static void			SendNotification(std::string a_msg);
 		static void			InjectAndCompileData();
 		static void			UpdateFoundForms();
 

@@ -41,7 +41,6 @@ namespace CFramework_Books_AG
 
 		static void			InstallFramework();
 		static void			ProcessFoundForm(RE::FormID a_baseID, RE::FormID a_eventID, bool a_supress);
-		static void			SendNotification(std::string a_msg);
 		static void			InjectAndCompileData();
 		static void			UpdateFoundForms();
 
@@ -85,7 +84,6 @@ namespace CFramework_Books_HS
 
 		static void			InstallFramework();
 		static void			ProcessFoundForm(RE::FormID a_baseID, RE::FormID a_eventID, bool a_supress);
-		static void			SendNotification(std::string a_msg);
 		static void			InjectAndCompileData();
 		static void			UpdateFoundForms();
 
@@ -129,7 +127,6 @@ namespace CFramework_Books_TY
 
 		static void			InstallFramework();
 		static void			ProcessFoundForm(RE::FormID a_baseID, RE::FormID a_eventID, bool a_supress);
-		static void			SendNotification(std::string a_msg);
 		static void			InjectAndCompileData();
 		static void			UpdateFoundForms();
 
@@ -173,7 +170,6 @@ namespace CFramework_Books_SB
 
 		static void			InstallFramework();
 		static void			ProcessFoundForm(RE::FormID a_baseID, RE::FormID a_eventID, bool a_supress);
-		static void			SendNotification(std::string a_msg);
 		static void			InjectAndCompileData();
 		static void			UpdateFoundForms();
 
@@ -217,7 +213,6 @@ namespace CFramework_Books_ST
 
 		static void			InstallFramework();
 		static void			ProcessFoundForm(RE::FormID a_baseID, RE::FormID a_eventID, bool a_supress);
-		static void			SendNotification(std::string a_msg);
 		static void			InjectAndCompileData();
 		static void			UpdateFoundForms();
 
@@ -261,7 +256,6 @@ namespace CFramework_Books_DG
 
 		static void			InstallFramework();
 		static void			ProcessFoundForm(RE::FormID a_baseID, RE::FormID a_eventID, bool a_supress);
-		static void			SendNotification(std::string a_msg);
 		static void			InjectAndCompileData();
 		static void			UpdateFoundForms();
 
@@ -306,7 +300,6 @@ namespace CFramework_Books_DGS
 
 		static void			InstallFramework();
 		static void			ProcessFoundForm(RE::FormID a_baseID, RE::FormID a_eventID, bool a_supress);
-		static void			SendNotification(std::string a_msg);
 		static void			InjectAndCompileData();
 		static void			UpdateFoundForms();
 
@@ -350,7 +343,6 @@ namespace CFramework_Books_DB
 
 		static void			InstallFramework();
 		static void			ProcessFoundForm(RE::FormID a_baseID, RE::FormID a_eventID, bool a_supress);
-		static void			SendNotification(std::string a_msg);
 		static void			InjectAndCompileData();
 		static void			UpdateFoundForms();
 
@@ -394,7 +386,6 @@ namespace CFramework_Books_DBS
 
 		static void			InstallFramework();
 		static void			ProcessFoundForm(RE::FormID a_baseID, RE::FormID a_eventID, bool a_supress);
-		static void			SendNotification(std::string a_msg);
 		static void			InjectAndCompileData();
 		static void			UpdateFoundForms();
 

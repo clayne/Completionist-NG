@@ -49,7 +49,6 @@ namespace CPatch_FishingItems
 
 		  static void			InstallFramework();
 		  static void			ProcessFoundForm(RE::FormID a_baseID, RE::FormID a_curID);
-		  static void			SendNotification(std::string a_msg);
 		  static void			InjectAndCompileData();
 		  static void			UpdateFoundForms();
 
@@ -105,7 +104,6 @@ namespace CPatch_FishingBooks
 
 		static void			InstallFramework();
 		static void			ProcessFoundForm(RE::FormID a_baseID, RE::FormID a_eventID, bool a_supress);
-		static void			SendNotification(std::string a_msg);
 		static void			InjectAndCompileData();
 		static void			UpdateFoundForms();
 

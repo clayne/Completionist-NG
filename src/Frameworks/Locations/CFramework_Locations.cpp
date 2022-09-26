@@ -126,7 +126,7 @@ namespace CFramework_Locations_AG {
 
 		if (a_marker) {
 			if (auto extraMapMarker = Serialization::CompletionistData::GetMapMarkerInternal(a_marker); extraMapMarker && extraMapMarker->mapData) {
-				if (extraMapMarker->mapData->flags.any(RE::MapMarkerData::Flag::kVisible) && !a_marker->IsDisabled()) {
+				if (extraMapMarker->mapData->flags.all(RE::MapMarkerData::Flag::kVisible, RE::MapMarkerData::Flag::kCanTravelTo) && !a_marker->IsDisabled()) {
 					BoolArray[a_pos] = true;
 					FoundItemData.AddForm(a_marker);
 				}
@@ -154,6 +154,7 @@ namespace CFramework_Locations_AG {
 		Data.CompileFormArray(CFramework_Locations_AG::SkyrimForms, "Skyrim.esm");
 		CFramework_Locations_AG::Data.Populate(NameArray, FormArray, BoolArray, TextArray, true);
 
+		TextArray.clear();
 		for (auto& name : NameArray) {
 			TextArray.push_back("$AddLocationHighlight{" + name + "}");
 		}
@@ -278,7 +279,7 @@ namespace CFramework_Locations_HR {
 
 		if (a_marker) {
 			if (auto extraMapMarker = Serialization::CompletionistData::GetMapMarkerInternal(a_marker); extraMapMarker && extraMapMarker->mapData) {
-				if (extraMapMarker->mapData->flags.any(RE::MapMarkerData::Flag::kVisible) && !a_marker->IsDisabled()) {
+				if (extraMapMarker->mapData->flags.all(RE::MapMarkerData::Flag::kVisible, RE::MapMarkerData::Flag::kCanTravelTo) && !a_marker->IsDisabled()) {
 					BoolArray[a_pos] = true;
 					FoundItemData.AddForm(a_marker);
 				}
@@ -305,6 +306,7 @@ namespace CFramework_Locations_HR {
 		Data.CompileFormArray(CFramework_Locations_HR::SkyrimForms, "Skyrim.esm");
 		CFramework_Locations_HR::Data.Populate(NameArray, FormArray, BoolArray, TextArray, true);
 
+		TextArray.clear();
 		for (auto& name : NameArray) {
 			TextArray.push_back("$AddLocationHighlight{" + name + "}");
 		}
@@ -427,7 +429,7 @@ namespace CFramework_Locations_SZ {
 
 		if (a_marker) {
 			if (auto extraMapMarker = Serialization::CompletionistData::GetMapMarkerInternal(a_marker); extraMapMarker && extraMapMarker->mapData) {
-				if (extraMapMarker->mapData->flags.any(RE::MapMarkerData::Flag::kVisible) && !a_marker->IsDisabled()) {
+				if (extraMapMarker->mapData->flags.all(RE::MapMarkerData::Flag::kVisible, RE::MapMarkerData::Flag::kCanTravelTo) && !a_marker->IsDisabled()) {
 					BoolArray[a_pos] = true;
 					FoundItemData.AddForm(a_marker);
 				}
@@ -450,6 +452,7 @@ namespace CFramework_Locations_SZ {
 		Data.CompileFormArray(CFramework_Locations_SZ::SkyrimForms, "Skyrim.esm");
 		CFramework_Locations_SZ::Data.Populate(NameArray, FormArray, BoolArray, TextArray, true);
 
+		TextArray.clear();
 		for (auto& name : NameArray) {
 			TextArray.push_back("$AddLocationHighlight{" + name + "}");
 		}
@@ -560,7 +563,7 @@ namespace CFramework_Locations_DG {
 
 		if (a_marker) {
 			if (auto extraMapMarker = Serialization::CompletionistData::GetMapMarkerInternal(a_marker); extraMapMarker && extraMapMarker->mapData) {
-				if (extraMapMarker->mapData->flags.any(RE::MapMarkerData::Flag::kVisible) && !a_marker->IsDisabled()) {
+				if (extraMapMarker->mapData->flags.all(RE::MapMarkerData::Flag::kVisible, RE::MapMarkerData::Flag::kCanTravelTo) && !a_marker->IsDisabled()) {
 					BoolArray[a_pos] = true;
 					FoundItemData.AddForm(a_marker);
 				}
@@ -583,6 +586,7 @@ namespace CFramework_Locations_DG {
 		Data.CompileFormArray(CFramework_Locations_DG::DawnguardForms, "Dawnguard.esm");
 		CFramework_Locations_DG::Data.Populate(NameArray, FormArray, BoolArray, TextArray, true);
 
+		TextArray.clear();
 		for (auto& name : NameArray) {
 			TextArray.push_back("$AddLocationHighlight{" + name + "}");
 		}
@@ -699,7 +703,7 @@ namespace CFramework_Locations_DB {
 
 		if (a_marker) {
 			if (auto extraMapMarker = Serialization::CompletionistData::GetMapMarkerInternal(a_marker); extraMapMarker && extraMapMarker->mapData) {
-				if (extraMapMarker->mapData->flags.any(RE::MapMarkerData::Flag::kVisible) && !a_marker->IsDisabled()) {
+				if (extraMapMarker->mapData->flags.all(RE::MapMarkerData::Flag::kVisible, RE::MapMarkerData::Flag::kCanTravelTo) && !a_marker->IsDisabled()) {
 					BoolArray[a_pos] = true;
 					FoundItemData.AddForm(a_marker);
 				}
@@ -722,6 +726,7 @@ namespace CFramework_Locations_DB {
 		Data.CompileFormArray(CFramework_Locations_DB::DragonbornForms, "Dragonborn.esm");
 		CFramework_Locations_DB::Data.Populate(NameArray, FormArray, BoolArray, TextArray, true);
 
+		TextArray.clear();
 		for (auto& name : NameArray) {
 			TextArray.push_back("$AddLocationHighlight{" + name + "}");
 		}

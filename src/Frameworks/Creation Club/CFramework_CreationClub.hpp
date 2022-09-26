@@ -74,7 +74,6 @@ namespace CFramework_CreationClub_B
 
 		static void			InstallFramework();
 		static void			ProcessFoundForm(RE::FormID a_baseID, RE::FormID a_eventID, bool a_supress);
-		static void			SendNotification(std::string a_msg);
 		static void			InjectAndCompileData();
 		static void			UpdateFoundForms();
 
@@ -118,7 +117,6 @@ namespace CFramework_CreationClub_S
 
 		static void			InstallFramework();
 		static void			ProcessFoundForm(RE::FormID a_baseID, RE::FormID a_eventID, bool a_supress);
-		static void			SendNotification(std::string a_msg);
 		static void			InjectAndCompileData();
 		static void			UpdateFoundForms();
 
@@ -167,7 +165,6 @@ namespace CFramework_CreationClub_A
 
 		  static void			InstallFramework();
 		  static void			ProcessFoundForm(RE::FormID a_baseID, RE::FormID a_curID);
-		  static void			SendNotification(std::string a_msg);
 		  static void			InjectAndCompileData();
 		  static void			UpdateFoundForms();
 
@@ -228,7 +225,6 @@ namespace CFramework_CreationClub_I
 
 		  static void			InstallFramework();
 		  static void			ProcessFoundForm(RE::FormID a_baseID, RE::FormID a_curID);
-		  static void			SendNotification(std::string a_msg);
 		  static void			InjectAndCompileData();
 		  static void			UpdateFoundForms();
 
@@ -289,7 +285,6 @@ namespace CFramework_CreationClub_W
 
 		  static void			InstallFramework();
 		  static void			ProcessFoundForm(RE::FormID a_baseID, RE::FormID a_curID);
-		  static void			SendNotification(std::string a_msg);
 		  static void			InjectAndCompileData();
 		  static void			UpdateFoundForms();
 
