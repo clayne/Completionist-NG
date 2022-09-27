@@ -15,6 +15,31 @@ static std::string replacename;
 
 namespace Completionist_MainHUD {
 
+	//---------------------------------------------------
+	//-- Crosshair Hook For HUD Tagging -----------------
+	//---------------------------------------------------
+
+	void FunctionHolder::InstallHook() {
+
+		auto& trampoline = SKSE::GetTrampoline();
+		_OnUpdateCrosshairText = trampoline.write_call<5>(RELOCATION_ID(39535, 40621).address() + REL::Relocate(0x289, 0x280), OnUpdateCrosshairText);
+	}
+
+	//---------------------------------------------------
+	//-- Crosshair Hook For HUD Tagging -----------------
+	//---------------------------------------------------
+
+	void FunctionHolder::OnUpdateCrosshairText(RE::UIMessageQueue* a_this, const RE::BSFixedString& a_menuName, RE::UI_MESSAGE_TYPE a_type, RE::IUIMessageData* a_data) {
+
+		_OnUpdateCrosshairText(a_this, a_menuName, a_type, a_data);
+
+		const auto data = a_data ? static_cast<RE::HUDData*>(a_data) : nullptr;
+		const auto crossHairRef = data ? data->crossHairRef.get() : RE::TESObjectREFRPtr();
+
+		if (!data) { return; }
+		Completionist_MainHUD::FunctionHolder::ProcessCrosshairReference(data);
+	}
+
 	void FunctionHolder::ProcessCrosshairReference(RE::HUDData* data) {
 
 		if (auto CurrentRef = RE::CrosshairPickData::GetSingleton(); CurrentRef) {

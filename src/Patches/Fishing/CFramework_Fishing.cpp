@@ -4,6 +4,7 @@
 #include "Internal Utility/ScriptObject.hpp"
 
 #undef AddForm
+#undef GetObject
 
 namespace CPatchManager_Fishing {
 
@@ -12,7 +13,7 @@ namespace CPatchManager_Fishing {
 	const char* pname = "ccbgssse001-fish.esm";
 
 	void CHandler::InstallFramework() {
-		
+
 		if (const auto* Mod = RE::TESDataHandler::GetSingleton()->LookupLoadedModByName(pname); !Mod) {
 			if (auto global = RE::TESForm::LookupByEditorID<RE::TESGlobal>("Completionist_FishingEnabled"); global) {
 				global->value = 0;
@@ -21,6 +22,7 @@ namespace CPatchManager_Fishing {
 		}
 
 		Player = static_cast<RE::Actor*>(RE::TESForm::LookupByID(0x00000014));
+		CPatch_FishingFood::CHandler::InstallFramework();
 		CPatch_FishingItems::CHandler::InstallFramework();
 		CPatch_FishingBooks::BHandler::InstallFramework();
 		CPatch_FishingSpots_A::CHandler::InstallFramework();
@@ -39,12 +41,290 @@ namespace CPatchManager_Fishing {
 		}
 
 		Player = static_cast<RE::Actor*>(RE::TESForm::LookupByID(0x00000014));
+
+		CPatch_FishingFood::CHandler::UpdateFoundForms();
 		CPatch_FishingItems::CHandler::UpdateFoundForms();
 		CPatch_FishingBooks::BHandler::UpdateFoundForms();
 		CPatch_FishingSpots_A::CHandler::UpdateFoundForms();
 		CPatch_FishingSpots_C::CHandler::UpdateFoundForms();
 		CPatch_FishingSpots_L::CHandler::UpdateFoundForms();
 		CPatch_FishingSpots_S::CHandler::UpdateFoundForms();
+	}
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------------ Fishies
+//------------------------------------------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------------
+
+namespace CPatch_FishingFood {
+
+	using namespace CFramework_Master;
+
+	Serialization::CompletionistData Data;
+
+	std::vector<std::string> NameArray{};
+	std::vector<std::string> TextArray{};
+	std::vector<RE::TESForm*> FormArray{};
+	std::vector<bool> BoolArray{};
+
+	inline ScriptObjectPtr MCMScript;
+	inline ScriptObjectPtr FSHScript;
+
+	uint32_t EntriesFound;
+	uint32_t EntriesTotal;
+
+	std::vector<std::string> temploc{};
+	std::vector<std::string> temprod{};
+	std::vector<RE::TESForm*> tempfsh{};
+
+	inline static RE::BGSListForm* RodList;
+	inline static RE::TESGlobal* GlobalV;
+	inline static RE::ControlMap* ContMap;
+
+	//---------------------------------------------------
+	//-- Framework Functions ( Install Framework ) ------
+	//---------------------------------------------------
+
+	void CHandler::InstallFramework() {
+
+		RodList = RE::TESForm::LookupByEditorID<RE::BGSListForm>("ccBGSSSE001_FishingRods");
+		GlobalV = RE::TESForm::LookupByEditorID<RE::TESGlobal>("Completionist_FishingRods");
+		ContMap = RE::ControlMap::GetSingleton();
+
+		CHandler::RegisterEvents();
+		CHandler::InjectAndCompileData();
+	}
+
+	//---------------------------------------------------
+	//-- Framework Functions ( Form Injection ) ---------
+	//---------------------------------------------------
+
+	void CHandler::InjectAndCompileData() {
+
+		auto handler = RE::TESDataHandler::GetSingleton();
+		MCMScript = ScriptObject::FromForm(static_cast<RE::TESForm*>(handler->LookupForm(0x000800, "Completionist.esp")), "Completionist_MCMScript");
+		FSHScript = ScriptObject::FromForm(static_cast<RE::TESForm*>(handler->LookupForm(0x033A57, "ccbgssse001-fish.esm")), "ccBGSSSE001_FishingSystemScript");
+
+		if (!MCMScript || !FSHScript) {
+			ERROR("Unable To Load Script Pointers");
+		}
+
+		std::string pName = "ccbgssse001-fish.esm";
+		std::string sName = "Skyrim.esm";
+
+		std::string Rod0 = "";
+		std::string Rod1 = "Argonian Fishing Rod";
+		std::string Rod2 = "Alik'ri Fishing Rod";
+
+		tempfsh.clear();
+		temprod.clear();
+		temploc.clear();
+
+		BuildFishArrays(handler->LookupForm(0x106E1B, sName), Rod0, "lakes and arctic waters during any weather");
+		BuildFishArrays(handler->LookupForm(0x000890, pName), Rod1, "arctic waters during any weather");
+		BuildFishArrays(handler->LookupForm(0x0008F0, pName), Rod0, "arctic waters during any weather");
+		BuildFishArrays(handler->LookupForm(0x0008A4, pName), Rod0, "arctic waters during any weather");
+		BuildFishArrays(handler->LookupForm(0x0008A3, pName), Rod0, "arctic waters during any weather");
+		BuildFishArrays(handler->LookupForm(0x0008EE, pName), Rod0, "lakes during any weather");
+		BuildFishArrays(handler->LookupForm(0x0008A2, pName), Rod0, "arctic waters during any weather");
+		BuildFishArrays(handler->LookupForm(0x0008EC, pName), Rod0, "lakes and streams during rainy weather");
+		BuildFishArrays(handler->LookupForm(0x00089C, pName), Rod0, "streams during any weather and lakes during clear weather");
+		BuildFishArrays(handler->LookupForm(0x0008A1, pName), Rod1, "caves during any weather");
+		BuildFishArrays(handler->LookupForm(0x000898, pName), Rod0, "lakes and streams during clear weather");
+		BuildFishArrays(handler->LookupForm(0x000897, pName), Rod0, "lakes during rainy weather");
+		BuildFishArrays(handler->LookupForm(0x106E19, sName), Rod0, "lakes during any weather");
+		BuildFishArrays(handler->LookupForm(0x000896, pName), Rod0, "caves during any weather");
+		BuildFishArrays(handler->LookupForm(0x0008EB, pName), Rod2, "lakes during any weather");
+		BuildFishArrays(handler->LookupForm(0x0008A0, pName), Rod0, "caves during any weather");
+		BuildFishArrays(handler->LookupForm(0x0008EF, pName), Rod0, "lakes during clear weather");
+		BuildFishArrays(handler->LookupForm(0x106E18, sName), Rod0, "caves and streams during any weather");
+		BuildFishArrays(handler->LookupForm(0x0008F1, pName), Rod2, "lakes during any weather");
+		BuildFishArrays(handler->LookupForm(0x0008F3, pName), Rod0, "streams during any weather");
+		BuildFishArrays(handler->LookupForm(0x0008ED, pName), Rod0, "lakes during rainy weather");
+		BuildFishArrays(handler->LookupForm(0x106E1A, sName), Rod0, "streams during any weather");
+		BuildFishArrays(handler->LookupForm(0x00089B, pName), Rod0, "lakes and streams during any weather");
+		BuildFishArrays(handler->LookupForm(0x106E1C, sName), Rod0, "lakes and caves during clear weather");
+		BuildFishArrays(handler->LookupForm(0x000F25, pName), Rod0, "lakes during any weather and streams during rainy weather");
+		BuildFishArrays(handler->LookupForm(0x00089E, pName), Rod0, "caves during any weather");
+		BuildFishArrays(handler->LookupForm(0x000891, pName), Rod0, "streams during any weather");
+		BuildFishArrays(handler->LookupForm(0x00088B, pName), Rod0, "caves during any weather");
+
+		FormArray.clear();
+		NameArray.clear();
+		BoolArray.clear();
+		TextArray.clear();
+
+		for (auto i = 0; i < tempfsh.size(); i++) {
+
+			Data.AddForm(tempfsh[i]->GetFormID());
+
+			FormArray.push_back(tempfsh[i]);
+			NameArray.push_back(tempfsh[i]->GetName());
+			
+			if (temprod[i] != Rod0) {
+				TextArray.push_back("$AddFishingDataRod{" + NameArray[i] + "}{" + NameArray[i] + "}{" + temploc[i] + "}{" + temprod[i] + "}");
+			}
+			else {
+				TextArray.push_back("$AddFishingData{" + NameArray[i] + "}{" + NameArray[i] + "}{" + temploc[i] + "}");
+			}
+		}
+
+		NameArray.resize(FormArray.size());
+		TextArray.resize(FormArray.size());
+		BoolArray.resize(FormArray.size());
+
+		tempfsh.clear();
+		temploc.clear();
+		temprod.clear();
+
+		EntriesTotal = FormArray.size();
+		EntriesFound = std::ranges::count(BoolArray, true);
+	}
+
+	//---------------------------------------------------
+	//-- Framework Events (Build FIsh Arrays ) ----------
+	//---------------------------------------------------
+
+	void CHandler::BuildFishArrays(RE::TESForm* a_form, std::string a_rod, std::string a_loc) {
+		
+		tempfsh.push_back(a_form);
+		temprod.push_back(a_rod);
+		temploc.push_back(a_loc);
+	}
+
+	//---------------------------------------------------
+	//-- Framework Events ( On Equip Event) -------------
+	//---------------------------------------------------
+
+	EventResult CHandler::ProcessEvent(const RE::TESEquipEvent* a_event, RE::BSTEventSource<RE::TESEquipEvent>*) {
+
+		if (!a_event || a_event->actor.get() != RE::PlayerCharacter::GetSingleton()) { return EventResult::kContinue; }
+		
+		if (!GlobalV || !RodList || !RodList->HasForm(a_event->baseObject)) { return EventResult::kContinue; }
+
+		if (a_event->equipped) { GlobalV->value += 1; }
+
+		if (!a_event->equipped) { GlobalV->value -= 1; }
+
+		if (GlobalV->value < 0) { GlobalV->value = 0; }
+
+		return EventResult::kContinue;
+	}
+
+	//---------------------------------------------------
+	//-- Framework Events ( On Item Added ) -------------
+	//---------------------------------------------------
+
+	EventResult CHandler::ProcessEvent(const RE::TESContainerChangedEvent* a_event, RE::BSTEventSource<RE::TESContainerChangedEvent>*) {
+
+		if (!a_event || a_event->newContainer != 0x00014 || !Data.HasForm(a_event->baseObj)) { return EventResult::kContinue; }
+
+		if (GlobalV->value > 0 && !ContMap->IsLookingControlsEnabled()) {
+			auto base = Data.GetBase(a_event->baseObj) ? Data.GetBase(a_event->baseObj) : a_event->baseObj;
+			CHandler::ProcessFoundForm(base, a_event->baseObj);
+			return EventResult::kContinue;
+		}
+		return EventResult::kContinue; 
+	}
+
+	//---------------------------------------------------
+	//-- Framework Events (Fishing Rod Equipped ) -------
+	//---------------------------------------------------
+	
+	bool CHandler::IsFishingRodEquipped() {
+
+		auto handler = RE::TESDataHandler::GetSingleton();
+		
+
+		auto var = ScriptObject::GetVariable(MCMScript, "bRefreshPage");
+		if (var) {
+			INFO("Got Variable with a value of {}", var->GetBool());
+		}
+
+	}
+
+	//---------------------------------------------------
+	//-- Framework Functions ( Process Found Form ) -----
+	//---------------------------------------------------
+
+	void CHandler::ProcessFoundForm(RE::FormID a_baseID, RE::FormID a_eventID) {
+
+		if (!FoundItemData_NoShow.HasForm(a_eventID)) {
+			auto msg = fmt::format("Completionist: Entry Complete - {:s}!"sv, Data.GetForm(a_eventID)->GetName());
+			FrameworkAPI::SendNotification(msg, "NotifySpecial");
+		}
+
+		FoundItemData_NoShow.AddForm(a_baseID);
+
+		auto t_pos = std::find(FormArray.begin(), FormArray.end(), Data.GetForm(a_baseID));
+		auto b_pos = std::distance(FormArray.begin(), t_pos);
+		BoolArray[b_pos] = true;
+
+		EntriesFound = std::ranges::count(BoolArray, true);
+		INFO("Found Items List Size - (No Show) = {}", FoundItemData_NoShow.data.size());
+	}
+
+	//---------------------------------------------------
+	//-- Framework Functions ( Update Found Forms ) -----
+	//---------------------------------------------------
+
+	void CHandler::UpdateFoundForms() {
+
+		for (auto i = 0; i < FormArray.size(); i++) {
+			if (FoundItemData_NoShow.HasForm(FormArray[i]->GetFormID())) {
+				BoolArray[i] = true;
+			}
+		}
+		EntriesTotal = FormArray.size();
+		EntriesFound = std::ranges::count(BoolArray, true);
+	}
+
+	//---------------------------------------------------
+	//-- Framework Functions ( MCM is Entry Complete ) --
+	//---------------------------------------------------
+
+	uint32_t CHandler::IsOptionCompleted(std::string a_name) {
+
+		if (auto t_pos = std::find(NameArray.begin(), NameArray.end(), a_name); t_pos != NameArray.end()) {
+			return uint32_t(BoolArray[std::distance(NameArray.begin(), t_pos)]);
+		}
+		return -1;
+	}
+
+	//---------------------------------------------------
+	//-- Framework Functions ( MCM Set Entry Complete ) -
+	//---------------------------------------------------
+
+	void CHandler::SetOptionCompleted(std::string a_name) {
+
+		if (auto t_pos = std::find(NameArray.begin(), NameArray.end(), a_name); t_pos != NameArray.end()) {
+			auto b_pos = std::distance(NameArray.begin(), t_pos);
+
+			if (BoolArray.at(b_pos)) {
+				BoolArray.at(b_pos) = false;
+
+				FoundItemData.RemoveForm(FormArray.at(b_pos)->GetFormID());
+				for (auto var : Data.GetAllVariations()) {
+					if (Data.GetBase(var) == FormArray.at(b_pos)->GetFormID()) {
+						FoundItemData.RemoveForm(var);
+					}
+				}
+			}
+			else {
+				BoolArray.at(b_pos) = true;
+				FoundItemData.AddForm(FormArray.at(b_pos)->GetFormID());
+				for (auto var : Data.GetAllVariations()) {
+					if (Data.GetBase(var) == FormArray.at(b_pos)->GetFormID()) {
+						FoundItemData.AddForm(var);
+					}
+				}
+			}
+
+			EntriesTotal = FormArray.size();
+			EntriesFound = std::ranges::count(BoolArray, true);
+		}
 	}
 }
 

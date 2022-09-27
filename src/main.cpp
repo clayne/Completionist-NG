@@ -1,10 +1,8 @@
 ﻿#include "Serialization.hpp"
+#include "Internal Utility/mainHUD.hpp"
 #include "Papyrus.hpp"
-#include "Hooks.hpp"
-#include "Events.hpp"
 #include "Radiant Quest Handler/Radiant Quests Manager.hpp"
 #include "Internal Utility/InventoryMode.hpp"
-
 #include "Frameworks/FrameworkMaster.hpp"
 
 using namespace Completionist;
@@ -19,14 +17,10 @@ static void SKSEMessageHandler(SKSE::MessagingInterface::Message* message)
 	{
 	case SKSE::MessagingInterface::kDataLoaded:
 
-		MenuEvents::Install();
-		BookEvents::Install();
-		SKSE_Hooks::Install();
-		Quest_Manager::Install();
-
-		CFramework_Master::FrameworkAPI::Register();
-
+		Completionist_MainHUD::FunctionHolder::InstallHook();
 		Completionist_Inventory::FunctionHolder::Register();
+		CFramework_Master::FrameworkAPI::Register();
+		Quest_Manager::Install();
 		Papyrus::Register();
 		break;
 

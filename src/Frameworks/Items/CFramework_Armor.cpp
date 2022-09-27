@@ -133,6 +133,7 @@ namespace CFramework_Armor {
 		Data.CompileFormArray(CFramework_Armor::SkyrimForms, "Skyrim.esm");
 		Data.CompileFormArray(CFramework_Armor::DawnguardForms, "Dawnguard.esm");
 		Data.CompileFormArray(CFramework_Armor::DragonbornForms, "Dragonborn.esm");
+
 		Data.CompileVariation(CFramework_Armor::SkyrimVariation, "Skyrim.esm");
 		Data.CompileVariation(CFramework_Armor::DawnguardVariation, "Dawnguard.esm");
 		Data.MergeAsCollectable();

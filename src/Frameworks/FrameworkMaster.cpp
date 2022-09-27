@@ -1,5 +1,6 @@
 #include "FrameworkMaster.hpp"
 #include "Internal Utility/ScriptObject.hpp"
+#include "Patches/PatchMaster.hpp"
 
 //Item Frameworks
 #include "Items/CFramework_Armor.hpp"
@@ -84,6 +85,8 @@ namespace CFramework_Master {
 		CFramework_CCManager::CHandler::InstallFramework();
 
 		// Patches
+		CPatch_Master::PatchAPI::InstallPatches();
+
 		CPatchManager_Fishing::CHandler::InstallFramework();
 
 		// Finished
@@ -110,6 +113,8 @@ namespace CFramework_Master {
 
 		a_vm->RegisterFunction("Framework_IsOptionCompleted", "Completionist_Native", Framework_IsOptionCompleted);
 		a_vm->RegisterFunction("Framework_SetOptionCompleted", "Completionist_Native", Framework_SetOptionCompleted);
+
+		a_vm->RegisterFunction("ShouldDisplayMiscHeader", "Completionist_Native", CPatch_Master::PatchAPI::ShouldDisplayMiscHeader);
 		return true;
 	}
 
@@ -191,6 +196,8 @@ namespace CFramework_Master {
 		CFramework_CCManager::CHandler::UpdateFoundForms();
 
 		// Patches
+		CPatch_Master::PatchAPI::LoadallPatches();
+
 		CPatchManager_Fishing::CHandler::UpdateFoundForms();
 	}
 
@@ -200,6 +207,10 @@ namespace CFramework_Master {
 
 	uint32_t FrameworkAPI::Framework_GetEntries_TotalByID(RE::StaticFunctionTag*, uint32_t a_ID) {
 
+		if (a_ID >= 200) {
+			return CPatch_Master::PatchAPI::GetEntries_TotalByID(a_ID);
+		}
+			
 		switch (a_ID) {
 
 			//-------------------------------------------- Items
@@ -345,6 +356,9 @@ namespace CFramework_Master {
 		case 55:
 			return CPatch_FishingSpots_S::EntriesTotal;
 
+		case 56:
+			return CPatch_FishingFood::EntriesTotal;
+
 			//-------------------------------------------- Creation CLub
 
 		case 90:
@@ -375,6 +389,10 @@ namespace CFramework_Master {
 	//---------------------------------------------------
 
 	uint32_t FrameworkAPI::Framework_GetEntries_FoundByID(RE::StaticFunctionTag*, uint32_t a_ID) {
+
+		if (a_ID >= 200) {
+			return CPatch_Master::PatchAPI::GetEntries_FoundByID(a_ID);
+		}
 
 		switch (a_ID) {
 
@@ -521,6 +539,9 @@ namespace CFramework_Master {
 	case 55:
 		return CPatch_FishingSpots_S::EntriesFound;
 
+	case 56:
+		return CPatch_FishingFood::EntriesFound;
+
 		//-------------------------------------------- Creation CLub
 
 	case 90:
@@ -551,6 +572,10 @@ namespace CFramework_Master {
 	//---------------------------------------------------
 
 	std::vector<RE::TESForm*> FrameworkAPI::Framework_GetFormArrayByID(RE::StaticFunctionTag*, uint32_t a_ID) {
+
+		if (a_ID >= 200) {
+			return CPatch_Master::PatchAPI::GetFormArrayByID(a_ID);
+		}
 
 		switch (a_ID) {
 
@@ -697,6 +722,9 @@ namespace CFramework_Master {
 		case 55:
 			return CPatch_FishingSpots_S::FormArray;
 
+		case 56:
+			return CPatch_FishingFood::FormArray;
+
 			//-------------------------------------------- Creation CLub
 
 		case 90:
@@ -727,6 +755,10 @@ namespace CFramework_Master {
 	//---------------------------------------------------
 
 	std::vector<std::string> FrameworkAPI::Framework_GetNameArrayByID(RE::StaticFunctionTag*, uint32_t a_ID) {
+
+		if (a_ID >= 200) {
+			return CPatch_Master::PatchAPI::GetNameArrayByID(a_ID);
+		}
 
 		switch (a_ID) {
 
@@ -874,6 +906,9 @@ namespace CFramework_Master {
 		case 55:
 			return CPatch_FishingSpots_S::NameArray;
 
+		case 56:
+			return CPatch_FishingFood::NameArray;
+
 			//-------------------------------------------- Creation CLub
 
 		case 90:
@@ -904,6 +939,10 @@ namespace CFramework_Master {
 	//---------------------------------------------------
 
 	std::vector<std::string> FrameworkAPI::Framework_GetTextArrayByID(RE::StaticFunctionTag*, uint32_t a_ID) {
+
+		if (a_ID >= 200) {
+			return CPatch_Master::PatchAPI::GetTextArrayByID(a_ID);
+		}
 
 		switch (a_ID) {
 
@@ -1050,6 +1089,9 @@ namespace CFramework_Master {
 		case 55:
 			return CPatch_FishingSpots_S::TextArray;
 
+		case 56:
+			return CPatch_FishingFood::TextArray;
+
 			//-------------------------------------------- Creation CLub
 
 		case 90:
@@ -1080,6 +1122,10 @@ namespace CFramework_Master {
 	//---------------------------------------------------
 
 	std::vector<bool> FrameworkAPI::Framework_GetBoolArrayByID(RE::StaticFunctionTag*, uint32_t a_ID) {
+
+		if (a_ID >= 200) {
+			return CPatch_Master::PatchAPI::GetBoolArrayByID(a_ID);
+		}
 
 		switch (a_ID) {
 
@@ -1226,6 +1272,9 @@ namespace CFramework_Master {
 		case 55:
 			return CPatch_FishingSpots_S::BoolArray;
 
+		case 56:
+			return CPatch_FishingFood::BoolArray;
+
 			//-------------------------------------------- Creation CLub
 
 		case 90:
@@ -1256,6 +1305,10 @@ namespace CFramework_Master {
 	//---------------------------------------------------
 
 	uint32_t FrameworkAPI::Framework_IsOptionCompleted(RE::StaticFunctionTag*, uint32_t a_ID, std::string a_name) {
+
+		if (a_ID >= 200) {
+			return CPatch_Master::PatchAPI::IsOptionCompleted(a_ID, a_name);
+		}
 
 		switch (a_ID) {
 
@@ -1368,10 +1421,13 @@ namespace CFramework_Master {
 			//-------------------------------------------- Fishing
 
 		case 50:
-			return CPatch_FishingItems::CHandler::IsOptionCompleted(a_name);;
+			return CPatch_FishingItems::CHandler::IsOptionCompleted(a_name);
 
 		case 51:
-			return CPatch_FishingBooks::BHandler::IsOptionCompleted(a_name);;
+			return CPatch_FishingBooks::BHandler::IsOptionCompleted(a_name);
+
+		case 56:
+			return CPatch_FishingFood::CHandler::IsOptionCompleted(a_name);
 
 		//-------------------------------------------- Creation CLub
 
@@ -1400,6 +1456,11 @@ namespace CFramework_Master {
 	//---------------------------------------------------
 
 	void FrameworkAPI::Framework_SetOptionCompleted(RE::StaticFunctionTag*, uint32_t a_ID, std::string a_name) {
+
+		if (a_ID >= 200) {
+			CPatch_Master::PatchAPI::SetOptionCompleted(a_ID, a_name);
+			return;
+		}
 
 		switch (a_ID) {
 
@@ -1549,6 +1610,10 @@ namespace CFramework_Master {
 
 		case 51:
 			CPatch_FishingBooks::BHandler::SetOptionCompleted(a_name);
+			break;
+
+		case 56:
+			CPatch_FishingFood::CHandler::SetOptionCompleted(a_name);
 			break;
 
 			//-------------------------------------------- Creation CLub
